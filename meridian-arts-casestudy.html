@@ -1,0 +1,2337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meridian Arts — Case Study</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f0f0e;
+    --paper: #f5f2ec;
+    --teal: #1a5c50;
+    --teal-light: #2b8c77;
+    --teal-pale: #e8f2f0;
+    --warm-grey: #8c8880;
+    --gold: #c9a84c;
+    --rule: #d8d3c9;
+    --white: #ffffff;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ─── NOISE OVERLAY ─── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 200px 200px;
+    pointer-events: none;
+    z-index: 9999;
+    opacity: 0.6;
+  }
+
+  /* ─── NAVIGATION ─── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 48px;
+    background: rgba(245, 242, 236, 0.88);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .nav-logo {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 36px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--warm-grey);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--teal); }
+
+  #backBtn, #themeToggleBtn {
+    position: fixed;
+    bottom: 32px;
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 9999px;
+    border: 1.5px solid rgba(0,0,0,0.12);
+    background: rgba(255,255,255,0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: #111;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+  #backBtn { left: 32px; top: auto; }
+  #themeToggleBtn { right: 32px; top: auto; }
+  #backBtn:hover, #themeToggleBtn:hover {
+    transform: scale(1.06) translateY(-2px);
+    box-shadow: 0 8px 28px rgba(255, 107, 91, 0.25);
+    border-color: #FF6B5B;
+  }
+  #themeToggleBtn .toggle-icon {
+    font-size: 1rem;
+    transition: transform 0.5s ease;
+  }
+  html, body, nav, .hero, .hero-right, .section-title, .section-eyebrow, .hero-title, .hero-label, footer, .outcome-cell, .pain-point {
+    transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+  }
+  [data-theme="dark"] #backBtn,
+  [data-theme="dark"] #themeToggleBtn,
+  html.dark #backBtn,
+  html.dark #themeToggleBtn {
+    background: rgba(20, 20, 20, 0.8);
+    border: 1.5px solid rgba(255, 255, 255, 0.1);
+    color: #f0f0f0;
+    box-shadow: 0 4px 20px rgba(255, 107, 91, 0.15);
+  }
+  [data-theme="dark"] #backBtn:hover,
+  [data-theme="dark"] #themeToggleBtn:hover,
+  html.dark #backBtn:hover,
+  html.dark #themeToggleBtn:hover {
+    box-shadow: 0 8px 32px rgba(255, 107, 91, 0.35);
+    border-color: #FF8A7A;
+  }
+  html.dark, html[data-theme="dark"] {
+    color: #f5f5f5;
+    background: #111111;
+  }
+  html.dark body, html[data-theme="dark"] body {
+    background: #06070d;
+    color: #f5f5f5;
+  }
+  html.dark :root, html[data-theme="dark"] :root {
+    --ink: #f5f5f5;
+    --paper: #06070d;
+    --teal: #38bdf8;
+    --teal-light: #7dd3fc;
+    --teal-pale: #0f172a;
+    --warm-grey: #94a3b8;
+    --gold: #facc15;
+    --rule: #1f2937;
+    --white: #f8fafc;
+  }
+  html.dark nav, html[data-theme="dark"] nav {
+    background: rgba(11, 14, 25, 0.92);
+    border-color: rgba(255,255,255,0.12);
+  }
+  html.dark .nav-logo, html[data-theme="dark"] .nav-logo {
+    color: #f5f5f5;
+  }
+  html.dark .nav-links a, html[data-theme="dark"] .nav-links a {
+    color: #cbd5e1;
+  }
+  html.dark .nav-links a:hover, html[data-theme="dark"] .nav-links a:hover {
+    color: #7dd3fc;
+  }
+  html.dark .hero-right, html[data-theme="dark"] .hero-right {
+    background: #111214;
+  }
+  html.dark .hero-art, html[data-theme="dark"] .hero-art {
+    background: #111214;
+  }
+  html.dark .scroll-indicator, html.dark .scroll-line,
+  html.dark .hero-subtitle, html.dark .meta-label, html.dark .meta-value,
+  html.dark .process-step-title, html.dark .outcome-title {
+    color: rgba(245,245,245,0.9);
+  }
+  html.dark .sim-ex-name,
+  html.dark .sim-ex-title,
+  html.dark .sim-ex-sub,
+  html.dark .ms-ev-name,
+  html.dark .ms-ev-loc,
+  html.dark .ms2-card-name,
+  html.dark .ms2-card-sub,
+  html.dark .ms2-title,
+  html.dark .ms3-date,
+  html.dark .ms3-time,
+  html.dark .ms3-g-num,
+  html.dark .ms3-back,
+  html.dark .ms3-sub,
+  html.dark .ms3-sum-text {
+    color: #0f0f0e !important;
+  }
+  html.dark .section-title, html[data-theme="dark"] .section-title,
+  html.dark .section-eyebrow, html[data-theme="dark"] .section-eyebrow,
+  html.dark .hero-title, html[data-theme="dark"] .hero-title,
+  html.dark .hero-label, html[data-theme="dark"] .hero-label {
+    color: #f8fafc;
+  }
+  html.dark .problem,
+  html.dark .problem-body,
+  html.dark .pain-point,
+  html.dark .pain-text,
+  html.dark .screens,
+  html.dark .outcomes,
+  html.dark .outcome-cell,
+  html.dark .reflection,
+  html.dark .process,
+  html.dark .process-circle {
+    background: #111114 !important;
+  }
+  html.dark .outcome-cell {
+    border-color: rgba(255,255,255,0.08);
+  }
+
+  html.dark .pain-text,
+  html.dark .problem-body,
+  html.dark .reflection-item-body,
+  html.dark .outcome-desc {
+    color: rgba(245,245,245,0.75);
+  }
+
+  html.dark .ms3-header,
+  html.dark .design-system,
+  html.dark footer,
+  html.dark .overview,
+  html.dark .solution,
+  html.dark .reflection,
+  html.dark .process {
+    border-color: rgba(255,255,255,0.08);
+  }
+
+  /* ─── HERO ─── */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding-top: 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 80px 48px 80px 48px;
+    position: relative;
+    z-index: 2;
+    background: transparent;
+    max-width: 640px;
+  }
+
+  .hero-label {
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .hero-label::before {
+    content: '';
+    display: block;
+    width: 32px;
+    height: 1px;
+    background: var(--teal);
+  }
+
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(52px, 6vw, 88px);
+    font-weight: 300;
+    line-height: 1.02;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+    color: var(--ink);
+  }
+
+  .hero-title em {
+    font-style: italic;
+    color: var(--teal);
+  }
+
+  .hero-title .block {
+    display: block;
+  }
+
+  .hero-subtitle {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(14px, 1.5vw, 18px);
+    font-weight: 300;
+    font-style: italic;
+    color: var(--warm-grey);
+    margin-top: 20px;
+    margin-bottom: 40px;
+    line-height: 1.5;
+    max-width: 380px;
+  }
+
+  .hero-meta {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+
+  .meta-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .meta-label {
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--warm-grey);
+  }
+
+  .meta-value {
+    font-size: 12px;
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  .hero-right {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    background: var(--paper);
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+  }
+
+  .hero-right-inner {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Colorful wavy art representation */
+  .hero-art {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: var(--paper);
+  }
+  .hero-art canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+  }
+  .hero-art svg {
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-art svg {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* ─── SCROLL INDICATOR ─── */
+  .scroll-indicator {
+    position: absolute;
+    bottom: 24px;
+    left: 48px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--warm-grey);
+    z-index: 2;
+    animation: fadeInUp 1s 1.2s both;
+  }
+
+  .scroll-line {
+    width: 40px;
+    height: 1px;
+    background: var(--warm-grey);
+    animation: expandX 1.5s 1.5s both;
+  }
+
+  /* ─── SECTION BASE ─── */
+  section {
+    padding: 100px 48px;
+  }
+
+  .section-eyebrow {
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-eyebrow::before {
+    content: '';
+    display: block;
+    width: 24px;
+    height: 1px;
+    background: var(--teal);
+  }
+
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(36px, 4vw, 60px);
+    font-weight: 300;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+  }
+
+  .section-title em {
+    font-style: italic;
+    color: var(--teal);
+  }
+
+  /* ─── OVERVIEW ─── */
+  .overview {
+    background: var(--ink);
+    color: var(--paper);
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 80px;
+    align-items: start;
+  }
+
+  .overview .section-eyebrow { color: var(--teal-light); }
+  .overview .section-eyebrow::before { background: var(--teal-light); }
+
+  .overview-desc {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-weight: 300;
+    line-height: 1.65;
+    color: rgba(245,242,236,0.85);
+    margin-top: 24px;
+  }
+
+  .overview-right {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    padding-top: 20px;
+  }
+
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .stat-cell {
+    padding: 28px 24px;
+    background: var(--ink);
+  }
+
+  .stat-number {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 42px;
+    font-weight: 300;
+    line-height: 1;
+    color: var(--teal-light);
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .stat-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(245,242,236,0.5);
+  }
+
+  .role-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .role-pill {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border: 1px solid rgba(255,255,255,0.15);
+    color: rgba(245,242,236,0.7);
+  }
+
+  /* ─── PROBLEM ─── */
+  .problem {
+    background: var(--paper);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+  }
+
+  .problem-body {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    font-weight: 300;
+    line-height: 1.7;
+    color: var(--warm-grey);
+    margin-top: 24px;
+  }
+
+  .pain-points {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-top: 60px;
+    border-top: 1px solid var(--rule);
+  }
+
+  .pain-point {
+    padding: 24px 0;
+    border-bottom: 1px solid var(--rule);
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    gap: 20px;
+    align-items: start;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.5s ease;
+  }
+
+  .pain-point.visible { opacity: 1; transform: translateY(0); }
+
+  .pain-num {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--teal);
+    padding-top: 2px;
+  }
+
+  .pain-text {
+    font-size: 14px;
+    color: var(--ink);
+    line-height: 1.5;
+  }
+
+  .pain-text strong {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 4px;
+  }
+
+  /* ─── SOLUTION ─── */
+  .solution {
+    background: var(--teal);
+    color: var(--paper);
+    padding: 100px 48px;
+  }
+
+  .solution .section-title { color: var(--paper); }
+  .solution .section-eyebrow { color: rgba(245,242,236,0.6); }
+  .solution .section-eyebrow::before { background: rgba(245,242,236,0.4); }
+
+  .solution-intro {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 300;
+    font-style: italic;
+    max-width: 640px;
+    margin-top: 24px;
+    margin-bottom: 72px;
+    color: rgba(245,242,236,0.85);
+    line-height: 1.6;
+  }
+
+  .solution-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.12);
+  }
+
+  .solution-card {
+    background: var(--teal);
+    padding: 40px 32px;
+    transition: background 0.3s;
+  }
+
+  .solution-card:hover { background: rgba(255,255,255,0.05); }
+
+  .solution-icon {
+    width: 36px;
+    height: 36px;
+    margin-bottom: 24px;
+    opacity: 0.7;
+  }
+
+  .solution-card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 300;
+    margin-bottom: 12px;
+    color: var(--paper);
+  }
+
+  .solution-card-body {
+    font-size: 12px;
+    line-height: 1.7;
+    color: rgba(245,242,236,0.65);
+  }
+
+  /* ─── SCREENS ─── */
+  .screens {
+    background: var(--paper);
+    padding: 100px 0;
+    overflow: hidden;
+  }
+
+  .screens-header {
+    padding: 0 48px;
+    margin-bottom: 64px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: end;
+  }
+
+  .screens-desc {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    font-weight: 300;
+    line-height: 1.65;
+    color: var(--warm-grey);
+  }
+
+  /* Desktop screen showcase */
+  .desktop-showcase {
+    padding: 0 48px;
+    margin-bottom: 80px;
+  }
+
+  .desktop-frame {
+    background: var(--ink);
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    box-shadow: 0 40px 100px rgba(0,0,0,0.25);
+  }
+
+  .desktop-bar {
+    background: #2a2a2a;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+  }
+  .dot-red { background: #ff5f57; }
+  .dot-yellow { background: #febc2e; }
+  .dot-green { background: #28c840; }
+
+  .desktop-url {
+    margin-left: 16px;
+    flex: 1;
+    background: #1a1a1a;
+    border-radius: 4px;
+    padding: 4px 12px;
+    font-size: 11px;
+    color: rgba(255,255,255,0.4);
+    font-family: 'DM Mono', monospace;
+  }
+
+  .desktop-screen {
+    width: 100%;
+    height: 520px;
+    background: #f5f2ec;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Simulated website inside frame */
+  .sim-nav {
+    background: white;
+    padding: 0 32px;
+    height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #e8e4de;
+  }
+
+  .sim-logo {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  .sim-logo-mark {
+    width: 28px; height: 28px;
+    background: var(--teal);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 12px; color: white; font-weight: 600;
+  }
+
+  .sim-nav-links {
+    display: flex; gap: 28px;
+    font-size: 10px; letter-spacing: 0.1em; color: var(--warm-grey);
+  }
+
+  .sim-btn {
+    background: var(--teal);
+    color: white;
+    padding: 6px 16px;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    border-radius: 2px;
+  }
+
+  .sim-hero {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    height: 240px;
+  }
+
+  .sim-hero-left {
+    padding: 32px;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .sim-hero-tag {
+    font-size: 8px; letter-spacing: 0.2em; color: var(--teal);
+    text-transform: uppercase; margin-bottom: 12px;
+  }
+
+  .sim-hero-h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-weight: 300;
+    line-height: 1.1;
+    color: var(--ink);
+    margin-bottom: 10px;
+  }
+
+  .sim-hero-h1 em { font-style: italic; color: var(--teal); text-decoration: underline; }
+
+  .sim-hero-p {
+    font-size: 9px;
+    color: var(--warm-grey);
+    line-height: 1.5;
+    margin-bottom: 16px;
+    max-width: 220px;
+  }
+
+  .sim-cta {
+    display: inline-block;
+    background: var(--teal);
+    color: white;
+    padding: 7px 16px;
+    font-size: 9px;
+    letter-spacing: 0.1em;
+  }
+
+  .sim-hero-right {
+    background: linear-gradient(135deg, #1a5c50 0%, #2b8c77 30%, #c9a84c 60%, #e07b54 80%, #6b4fa0 100%);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .sim-wave {
+    position: absolute;
+    inset: 0;
+  }
+
+  .sim-exhibitions {
+    padding: 24px 32px;
+    background: #f5f2ec;
+  }
+
+  .sim-ex-label {
+    font-size: 8px; letter-spacing: 0.2em; color: var(--teal); text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+
+  .sim-ex-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px; font-weight: 400;
+    margin-bottom: 16px;
+  }
+
+  .sim-ex-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  .sim-ex-card {
+    background: white;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .sim-ex-img {
+    height: 56px;
+  }
+
+  .sim-ex-img-1 { background: linear-gradient(135deg, #1a5c50, #6b9e8a); }
+  .sim-ex-img-2 { background: linear-gradient(135deg, #8c6b4f, #c9a84c); }
+  .sim-ex-img-3 { background: linear-gradient(135deg, #4f6b8c, #6b4fa0); }
+
+  .sim-ex-info {
+    padding: 8px 10px;
+  }
+
+  .sim-ex-name { font-size: 9px; font-weight: 500; margin-bottom: 2px; }
+  .sim-ex-sub { font-size: 8px; color: var(--warm-grey); }
+
+  /* Mobile screens row */
+  .mobile-row {
+    padding: 0 48px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 32px;
+  }
+
+  .mobile-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .mobile-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--warm-grey);
+  }
+
+  .mobile-frame {
+    width: 100%;
+    max-width: 260px;
+    background: var(--ink);
+    border-radius: 32px;
+    padding: 8px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+    position: relative;
+  }
+
+  .mobile-notch {
+    width: 80px; height: 24px;
+    background: var(--ink);
+    border-radius: 0 0 16px 16px;
+    position: absolute;
+    top: 8px; left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+  }
+
+  .mobile-screen {
+    background: #f5f2ec;
+    border-radius: 26px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* Screen 1: Home */
+  .ms-header {
+    background: var(--ink);
+    padding: 48px 16px 16px;
+    color: white;
+  }
+
+  .ms-h-title { font-family: 'Cormorant Garamond', serif; font-size: 16px; font-weight: 400; }
+  .ms-h-sub { font-size: 9px; color: rgba(255,255,255,0.5); margin-top: 2px; }
+
+  .ms-feature-card {
+    background: var(--ink);
+    margin: 0 12px;
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .ms-fc-img {
+    height: 90px;
+    background: linear-gradient(135deg, #1a5c50 0%, #2b8c77 50%, #1a5c50 100%);
+    display: flex;
+    align-items: flex-end;
+    padding: 10px;
+  }
+
+  .ms-fc-tag {
+    font-size: 7px; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--teal-light); background: rgba(0,0,0,0.4);
+    padding: 2px 6px; border-radius: 2px;
+  }
+
+  .ms-fc-title { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-weight: 400;
+    color: white; padding: 8px 10px 10px; }
+
+  .ms-fc-sub { font-size: 8px; color: rgba(255,255,255,0.5); padding: 0 10px 10px; }
+
+  .ms-events-label { padding: 12px 12px 6px;
+    font-size: 8px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--teal); }
+
+  .ms-event {
+    margin: 0 12px 6px;
+    background: white;
+    border-radius: 8px;
+    padding: 10px 12px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .ms-ev-date {
+    background: var(--teal);
+    color: white;
+    font-size: 8px;
+    padding: 3px 6px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+
+  .ms-ev-info { flex: 1; }
+  .ms-ev-name { font-size: 10px; font-weight: 500; }
+  .ms-ev-loc { font-size: 8px; color: var(--warm-grey); }
+
+  /* Tabbar */
+  .ms-tabbar {
+    background: white;
+    display: flex;
+    border-top: 1px solid #e8e4de;
+    padding: 8px 0 10px;
+  }
+
+  .ms-tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    font-size: 7px;
+    letter-spacing: 0.05em;
+    color: var(--warm-grey);
+  }
+
+  .ms-tab.active { color: var(--teal); }
+
+  .ms-tab-icon {
+    width: 16px; height: 16px;
+    border: 1.5px solid currentColor;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8px;
+  }
+
+  /* Screen 2: Exhibitions */
+  .ms2-filter {
+    padding: 48px 12px 10px;
+    background: #f5f2ec;
+  }
+
+  .ms2-title { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 400; margin-bottom: 10px; }
+
+  .ms2-pills {
+    display: flex; gap: 6px;
+  }
+
+  .ms2-pill {
+    font-size: 8px; padding: 4px 10px;
+    border-radius: 20px; border: 1px solid var(--rule);
+    color: var(--warm-grey);
+  }
+
+  .ms2-pill.active {
+    background: var(--ink); color: white; border-color: var(--ink);
+  }
+
+  .ms2-card {
+    background: white;
+    margin: 8px 12px;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .ms2-card-img {
+    height: 70px;
+  }
+
+  .ms2-img-1 { background: linear-gradient(135deg, #1a5c50, #6b9e8a, #2b8c77); }
+  .ms2-img-2 { background: linear-gradient(135deg, #8c6b4f, #d4a574, #c9a84c); }
+  .ms2-img-3 { background: linear-gradient(135deg, #4f6b8c, #7a9bc4, #6b4fa0); }
+
+  .ms2-card-body { padding: 10px 12px; }
+
+  .ms2-status {
+    display: inline-block;
+    font-size: 7px; letter-spacing: 0.08em;
+    padding: 2px 7px; border-radius: 2px; margin-bottom: 5px;
+  }
+
+  .ms2-status.open { background: #e8f5f0; color: var(--teal); }
+  .ms2-status.soon { background: #fff3e0; color: #e07b20; }
+  .ms2-status.always { background: var(--teal-pale); color: var(--teal); }
+
+  .ms2-card-name { font-family: 'Cormorant Garamond', serif; font-size: 14px; font-weight: 400; }
+  .ms2-card-sub { font-size: 8px; color: var(--warm-grey); margin-top: 2px; }
+
+  /* Screen 3: Book */
+  .ms3-header {
+    background: var(--ink);
+    padding: 48px 16px 20px;
+    color: white;
+  }
+
+  .ms3-back { font-size: 16px; color: rgba(255,255,255,0.6); margin-bottom: 10px; }
+  .ms3-title { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 300; }
+  .ms3-sub { font-size: 9px; color: rgba(255,255,255,0.5); margin-top: 4px; }
+
+  .ms3-body { padding: 14px 16px; background: #f5f2ec; }
+
+  .ms3-section-label {
+    font-size: 8px; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--teal); margin-bottom: 8px;
+  }
+
+  .ms3-dates {
+    display: flex; gap: 6px; margin-bottom: 14px; overflow: hidden;
+  }
+
+  .ms3-date {
+    width: 36px; height: 36px;
+    border-radius: 6px;
+    border: 1px solid var(--rule);
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+
+  .ms3-date.active {
+    background: var(--teal);
+    color: white;
+    border-color: var(--teal);
+  }
+
+  .ms3-times {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+
+  .ms3-time {
+    padding: 8px;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    background: white;
+    text-align: center;
+    font-size: 10px;
+  }
+
+  .ms3-time.active {
+    background: var(--teal);
+    color: white;
+    border-color: var(--teal);
+  }
+
+  .ms3-guests {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    padding: 8px 12px;
+    background: white;
+    margin-bottom: 14px;
+  }
+
+  .ms3-g-btn {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--rule);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    line-height: 1;
+    color: var(--ink);
+  }
+
+  .ms3-g-num { flex: 1; text-align: center; font-size: 11px; font-weight: 500; }
+
+  .ms3-summary {
+    background: #e8f2f0;
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+  }
+
+  .ms3-sum-title { font-size: 9px; font-weight: 600; color: var(--teal); margin-bottom: 4px; }
+  .ms3-sum-text { font-size: 8px; color: var(--warm-grey); line-height: 1.5; }
+
+  .ms3-confirm {
+    background: var(--teal);
+    color: white;
+    text-align: center;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+  }
+
+  /* ─── DESIGN SYSTEM ─── */
+  .design-system {
+    background: var(--ink);
+    color: var(--paper);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+  }
+
+  .design-system .section-eyebrow { color: var(--teal-light); }
+  .design-system .section-eyebrow::before { background: var(--teal-light); }
+
+  .ds-intro {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    font-weight: 300;
+    line-height: 1.7;
+    color: rgba(245,242,236,0.75);
+    margin-top: 24px;
+  }
+
+  .ds-right {
+    padding-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+  }
+
+  .ds-block-title {
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: rgba(245,242,236,0.4);
+    margin-bottom: 16px;
+  }
+
+  .colors-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .color-chip {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .color-swatch {
+    width: 52px; height: 52px;
+    border-radius: 4px;
+  }
+
+  .color-name {
+    font-size: 8px;
+    letter-spacing: 0.08em;
+    color: rgba(245,242,236,0.4);
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  .type-row {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding-top: 16px;
+  }
+
+  .type-sample {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+  }
+
+  .type-label {
+    font-size: 8px;
+    letter-spacing: 0.15em;
+    color: rgba(245,242,236,0.35);
+    width: 80px;
+    flex-shrink: 0;
+  }
+
+  /* ─── OUTCOMES ─── */
+  .outcomes {
+    background: var(--paper);
+  }
+
+  .outcomes-grid {
+    margin-top: 60px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+  }
+
+  .outcome-cell {
+    background: var(--paper);
+    padding: 40px 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    opacity: 0;
+    transform: translateY(16px);
+    transition: all 0.6s ease;
+  }
+
+  .outcome-cell.visible { opacity: 1; transform: translateY(0); }
+
+  .outcome-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 56px;
+    font-weight: 300;
+    color: var(--teal);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .outcome-title {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    color: var(--ink);
+    margin-top: 4px;
+  }
+
+  .outcome-desc {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    font-weight: 300;
+    color: var(--warm-grey);
+    line-height: 1.5;
+  }
+
+  /* ─── REFLECTION ─── */
+  .reflection {
+    background: var(--teal-pale);
+    padding: 100px 48px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+  }
+
+  .reflection-quote {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(24px, 3vw, 38px);
+    font-weight: 300;
+    font-style: italic;
+    line-height: 1.4;
+    color: var(--teal);
+    position: relative;
+    padding-left: 24px;
+  }
+
+  .reflection-quote::before {
+    content: '"';
+    position: absolute;
+    left: 0;
+    top: -8px;
+    font-size: 60px;
+    line-height: 1;
+    color: var(--teal);
+    opacity: 0.3;
+    font-family: 'Cormorant Garamond', serif;
+  }
+
+  .reflection-right {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    padding-top: 16px;
+  }
+
+  .reflection-item {
+    padding-bottom: 28px;
+    border-bottom: 1px solid rgba(26,92,80,0.2);
+  }
+
+  .reflection-item:last-child { border-bottom: none; }
+
+  .reflection-item-title {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 8px;
+  }
+
+  .reflection-item-body {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    font-weight: 300;
+    line-height: 1.6;
+    color: var(--ink);
+  }
+
+  /* ─── FOOTER ─── */
+  footer {
+    background: var(--ink);
+    color: rgba(245,242,236,0.4);
+    padding: 60px 48px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+
+  .footer-left {}
+
+  .footer-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-weight: 300;
+    color: var(--paper);
+    margin-bottom: 8px;
+  }
+
+  .footer-sub {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    line-height: 1.6;
+  }
+
+  .footer-right {
+    text-align: right;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    line-height: 1.8;
+  }
+
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes expandX {
+    from { width: 0; }
+    to { width: 40px; }
+  }
+
+  @keyframes slideRight {
+    from { transform: translateX(-100%); }
+    to { transform: translateX(0); }
+  }
+
+  .hero-label { animation: fadeInUp 0.8s 0.2s both; }
+  .hero-title { animation: fadeInUp 0.8s 0.4s both; }
+  .hero-subtitle { animation: fadeInUp 0.8s 0.6s both; }
+  .hero-meta { animation: fadeInUp 0.8s 0.8s both; }
+  .hero-right { animation: fadeIn 1.2s 0.3s both; }
+
+  /* ─── PROCESS SECTION ─── */
+  .process {
+    background: #f0ece3;
+    padding: 100px 48px;
+  }
+
+  .process-flow {
+    margin-top: 60px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    position: relative;
+  }
+
+  .process-flow::before {
+    content: '';
+    position: absolute;
+    top: 28px;
+    left: 14%;
+    right: 14%;
+    height: 1px;
+    background: var(--teal);
+    opacity: 0.3;
+  }
+
+  .process-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 0 20px;
+  }
+
+  .process-circle {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    border: 1px solid var(--teal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-weight: 300;
+    color: var(--teal);
+    margin-bottom: 20px;
+    background: #f0ece3;
+    position: relative;
+    z-index: 1;
+  }
+
+  .process-step-title {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink);
+    margin-bottom: 8px;
+  }
+
+  .process-step-desc {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    font-weight: 300;
+    line-height: 1.5;
+    color: var(--warm-grey);
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 900px) {
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    section { padding: 60px 24px; }
+    .hero { grid-template-columns: 1fr; }
+    .hero-right { height: 100%; }
+    .overview, .problem, .design-system, .reflection {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+    .solution-grid { grid-template-columns: 1fr; }
+    .mobile-row { grid-template-columns: 1fr; max-width: 280px; margin: 0 auto; }
+    .screens-header { grid-template-columns: 1fr; }
+    .outcomes-grid { grid-template-columns: 1fr; }
+    .process-flow { grid-template-columns: 1fr 1fr; }
+    .stat-row { grid-template-columns: 1fr; }
+    footer { flex-direction: column; gap: 24px; }
+    .footer-right { text-align: left; }
+    .hero-left { padding: 60px 24px 40px; }
+  }
+</style>
+</head>
+<body>
+<a id="backBtn" href="index.html">← Back</a>
+<button id="themeToggleBtn" title="Toggle light / dark theme"><span class="toggle-icon">☾</span><span class="toggle-label">Dark Mode</span></button>
+
+<!-- NAV -->
+<nav>
+  <a href="../index.html" class="nav-logo" style="display: inline-flex; align-items: center; gap: 0.5rem; color: var(--teal);">← Back to Portfolio</a>
+  <ul class="nav-links">
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#problem">Problem</a></li>
+    <li><a href="#solution">Solution</a></li>
+    <li><a href="#screens">Screens</a></li>
+    <li><a href="#outcomes">Outcomes</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-left">
+    <div class="hero-label">UI/UX Case Study · 2025</div>
+    <h1 class="hero-title">
+      <span class="block">Meridian</span>
+      <em>Arts</em>
+    </h1>
+    <p class="hero-subtitle">A digital experience that brings world-class contemporary art closer to the people — from discovery to booking, seamlessly.</p>
+    <div class="hero-meta">
+      <div class="meta-item">
+        <span class="meta-label">Platform</span>
+        <span class="meta-value">Web + iOS</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Duration</span>
+        <span class="meta-value">12 weeks</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Domain</span>
+        <span class="meta-value">Arts & Culture</span>
+      </div>
+      <div class="meta-item">
+        <span class="meta-label">Year</span>
+        <span class="meta-value">2025</span>
+      </div>
+    </div>
+    <div class="scroll-indicator">
+      <span class="scroll-line"></span>
+      Scroll to explore
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="hero-right-inner">
+      <div class="hero-art">
+        <canvas id="aurora-bg"></canvas>
+        <canvas id="aurora-fg"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- OVERVIEW -->
+<section class="overview" id="overview">
+  <div>
+    <div class="section-eyebrow">Project Overview</div>
+    <h2 class="section-title" style="color: var(--paper);">An art museum<br><em>reimagined</em><br>for the digital era</h2>
+    <p class="overview-desc">Meridian Arts Museum needed a cohesive digital presence — a website and mobile application that not only showcased their rich program of exhibitions and events, but made attendance effortless through integrated discovery and booking.</p>
+  </div>
+  <div class="overview-right">
+    <div class="stat-row">
+      <div class="stat-cell">
+        <span class="stat-number">3×</span>
+        <span class="stat-label">Booking Conversion</span>
+      </div>
+      <div class="stat-cell">
+        <span class="stat-number">4</span>
+        <span class="stat-label">Core Screens</span>
+      </div>
+      <div class="stat-cell">
+        <span class="stat-number">12w</span>
+        <span class="stat-label">Design Sprint</span>
+      </div>
+    </div>
+    <div>
+      <div class="ds-block-title" style="color: rgba(245,242,236,0.4);">My Roles</div>
+      <div class="role-list">
+        <span class="role-pill">UX Research</span>
+        <span class="role-pill">UI Design</span>
+        <span class="role-pill">Prototyping</span>
+        <span class="role-pill">Design System</span>
+        <span class="role-pill">Usability Testing</span>
+        <span class="role-pill">Web Development</span>
+      </div>
+    </div>
+    <div>
+      <div class="ds-block-title" style="color: rgba(245,242,236,0.4);">Tools Used</div>
+      <div class="role-list">
+        <span class="role-pill">Figma</span>
+        <span class="role-pill">FigJam</span>
+        <span class="role-pill">Maze</span>
+        <span class="role-pill">React</span>
+        <span class="role-pill">Lottie</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM -->
+<section class="problem" id="problem">
+  <div>
+    <div class="section-eyebrow">The Problem</div>
+    <h2 class="section-title">Why visitors<br>were <em>leaving</em><br>without booking</h2>
+    <p class="problem-body">The museum's existing digital touchpoints were fragmented — a dated website with no mobile experience and a phone-only booking system that frustrated modern visitors. Attendance was declining not from lack of interest, but from lack of access.</p>
+  </div>
+  <div>
+    <div class="pain-points">
+      <div class="pain-point">
+        <span class="pain-num">01</span>
+        <div class="pain-text">
+          <strong>No unified discovery path</strong>
+          Exhibitions, events, and booking lived in separate silos with no cohesive navigation, forcing users to jump between pages with no clear journey.
+        </div>
+      </div>
+      <div class="pain-point">
+        <span class="pain-num">02</span>
+        <div class="pain-text">
+          <strong>Mobile experience non-existent</strong>
+          Over 68% of web traffic came from mobile devices, yet the desktop site offered no responsive design or touch-optimized interactions.
+        </div>
+      </div>
+      <div class="pain-point">
+        <span class="pain-num">03</span>
+        <div class="pain-text">
+          <strong>Booking required a phone call</strong>
+          Visitors had to call the museum during office hours to reserve a spot — a massive friction point for younger, digitally-native audiences.
+        </div>
+      </div>
+      <div class="pain-point">
+        <span class="pain-num">04</span>
+        <div class="pain-text">
+          <strong>Exhibition context was thin</strong>
+          Show listings lacked depth — no artist context, curated descriptions, or status indicators to help visitors plan their visits meaningfully.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section class="process">
+  <div class="section-eyebrow">Design Process</div>
+  <h2 class="section-title">From research<br>to <em>resolution</em></h2>
+
+  <div class="process-flow">
+    <div class="process-step">
+      <div class="process-circle">1</div>
+      <div class="process-step-title">Discover</div>
+      <p class="process-step-desc">Stakeholder interviews, visitor surveys, and competitive analysis to map the landscape.</p>
+    </div>
+    <div class="process-step">
+      <div class="process-circle">2</div>
+      <div class="process-step-title">Define</div>
+      <p class="process-step-desc">User personas, journey maps, and a prioritized problem statement to focus the design effort.</p>
+    </div>
+    <div class="process-step">
+      <div class="process-circle">3</div>
+      <div class="process-step-title">Design</div>
+      <p class="process-step-desc">Wireframes, visual identity, component library, and high-fidelity prototypes for both platforms.</p>
+    </div>
+    <div class="process-step">
+      <div class="process-circle">4</div>
+      <div class="process-step-title">Deliver</div>
+      <p class="process-step-desc">Usability testing, design handoff, developer specs, and iterative refinement post-launch.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SOLUTION -->
+<section class="solution" id="solution">
+  <div class="section-eyebrow">The Solution</div>
+  <h2 class="section-title">A platform that<br>puts <em>art first</em></h2>
+  <p class="solution-intro">We designed Meridian Arts as a seamless two-platform ecosystem — a refined web presence for discovery and context, and a native mobile app that makes booking as frictionless as possible.</p>
+
+  <div class="solution-grid">
+    <div class="solution-card">
+      <svg class="solution-icon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.5">
+        <rect x="3" y="7" width="30" height="22" rx="2"/>
+        <path d="M3 12h30"/>
+        <circle cx="7" cy="9.5" r="1"/>
+        <circle cx="11" cy="9.5" r="1"/>
+        <circle cx="15" cy="9.5" r="1"/>
+      </svg>
+      <h3 class="solution-card-title">Responsive Web Platform</h3>
+      <p class="solution-card-body">A fully responsive website that works beautifully across all screen sizes. Rich exhibition pages, event listings, and integrated booking — all with the editorial quality the museum deserved.</p>
+    </div>
+    <div class="solution-card">
+      <svg class="solution-icon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.5">
+        <rect x="10" y="2" width="16" height="32" rx="4"/>
+        <circle cx="18" cy="30" r="1.5" fill="currentColor"/>
+      </svg>
+      <h3 class="solution-card-title">Native Mobile App</h3>
+      <p class="solution-card-body">An iOS-first app designed for quick discovery on the go. Intelligent exhibition filtering, persistent event calendar, and a one-tap booking flow make planning a visit feel effortless.</p>
+    </div>
+    <div class="solution-card">
+      <svg class="solution-icon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.5">
+        <rect x="4" y="6" width="28" height="24" rx="2"/>
+        <path d="M4 13h28"/>
+        <path d="M12 19h12M12 23h8"/>
+      </svg>
+      <h3 class="solution-card-title">Unified Booking System</h3>
+      <p class="solution-card-body">A date-picker driven reservation flow that handles visit dates, times, and guest counts — with clear confirmations and a pay-what-you-wish admission model that removes financial barriers to attendance.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SCREENS -->
+<section class="screens" id="screens">
+  <div class="screens-header">
+    <div>
+      <div class="section-eyebrow">Final Designs</div>
+      <h2 class="section-title">Every screen,<br><em>considered</em></h2>
+    </div>
+    <p class="screens-desc">The design language draws from the museum's physical identity — warm paper tones, deep teal, and Cormorant Garamond's editorial elegance — creating a digital space that feels as cultivated as the galleries themselves.</p>
+  </div>
+
+  <!-- Desktop mockup -->
+  <div class="desktop-showcase">
+    <div class="desktop-frame">
+      <div class="desktop-bar">
+        <div class="dot dot-red"></div>
+        <div class="dot dot-yellow"></div>
+        <div class="dot dot-green"></div>
+        <div class="desktop-url">meridianarts.org</div>
+      </div>
+      <div class="desktop-screen">
+        <!-- Simulated website -->
+        <div class="sim-nav">
+          <div class="sim-logo">
+            <div class="sim-logo-mark">MA</div>
+            MERIDIAN ARTS
+          </div>
+          <div class="sim-nav-links">
+            <span>Exhibitions</span>
+            <span>Events</span>
+            <span>Visit</span>
+            <span>About</span>
+          </div>
+          <div class="sim-btn">Book a visit</div>
+        </div>
+        <div class="sim-hero">
+          <div class="sim-hero-left">
+            <div class="sim-hero-tag">Where vision takes form</div>
+            <div class="sim-hero-h1"><em>Vision</em><br>takes form</div>
+            <p class="sim-hero-p">Discover world-class contemporary art, immersive experiences, and conversations that shape culture.</p>
+            <span class="sim-cta">Plan your visit →</span>
+          </div>
+          <div class="sim-hero-right">
+            <svg viewBox="0 0 350 200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%">
+              <path d="M0,0 L350,0 L350,60 Q280,90 210,70 Q140,50 70,80 Q35,95 0,85 Z" fill="#2b8c77" opacity="0.9"/>
+              <path d="M0,40 Q70,20 140,50 Q210,80 280,50 Q315,35 350,40 L350,110 Q280,130 210,100 Q140,70 70,100 Q35,115 0,105 Z" fill="#6b4fa0" opacity="0.8"/>
+              <path d="M0,80 Q70,60 140,90 Q210,120 280,85 Q315,70 350,75 L350,155 Q280,170 210,140 Q140,110 70,140 Q35,155 0,145 Z" fill="#c9a84c" opacity="0.85"/>
+              <path d="M0,125 Q70,100 140,130 Q210,160 280,125 Q315,110 350,115 L350,200 L0,200 Z" fill="#e07b54" opacity="0.9"/>
+            </svg>
+          </div>
+        </div>
+        <div class="sim-exhibitions">
+          <div class="sim-ex-label">Now on view</div>
+          <div class="sim-ex-title">Current Exhibitions</div>
+          <div class="sim-ex-grid">
+            <div class="sim-ex-card">
+              <div class="sim-ex-img sim-ex-img-1"></div>
+              <div class="sim-ex-info">
+                <div class="sim-ex-name">Luminescence</div>
+                <div class="sim-ex-sub">Contemporary Glass Art</div>
+              </div>
+            </div>
+            <div class="sim-ex-card">
+              <div class="sim-ex-img sim-ex-img-2"></div>
+              <div class="sim-ex-info">
+                <div class="sim-ex-name">Revisions</div>
+                <div class="sim-ex-sub">Feminist Sculptors 1960–80</div>
+              </div>
+            </div>
+            <div class="sim-ex-card">
+              <div class="sim-ex-img sim-ex-img-3"></div>
+              <div class="sim-ex-info">
+                <div class="sim-ex-name">Digital Kinetics</div>
+                <div class="sim-ex-sub">Chen Wei & Collective</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile trio -->
+  <div class="mobile-row">
+
+    <!-- Home -->
+    <div class="mobile-container">
+      <div class="mobile-label">01 — Home</div>
+      <div class="mobile-frame">
+        <div class="mobile-notch"></div>
+        <div class="mobile-screen">
+          <div class="ms-header">
+            <div class="ms-h-title">Meridian</div>
+            <div class="ms-h-sub">Arts Museum · San Francisco</div>
+          </div>
+          <div style="padding: 12px 0 0;">
+            <div class="ms-feature-card" style="margin: 0 12px;">
+              <div class="ms-fc-img" style="background: linear-gradient(135deg, #1a5c50 0%, #2b8c77 40%, #1a3a2a 100%);">
+                <span class="ms-fc-tag">NOW IN VIEW</span>
+              </div>
+              <div class="ms-fc-title">Luminescence</div>
+              <div class="ms-fc-sub">Contemporary Glass Art · Jun 5 – Sep 8</div>
+            </div>
+          </div>
+          <div class="ms-events-label">Upcoming Events</div>
+          <div class="ms-event">
+            <span class="ms-ev-date">Jun 15</span>
+            <div class="ms-ev-info">
+              <div class="ms-ev-name">Artist Talk: Glass & Light</div>
+              <div class="ms-ev-loc">2:00 PM · Main Gallery</div>
+            </div>
+          </div>
+          <div class="ms-event">
+            <span class="ms-ev-date">Jun 22</span>
+            <div class="ms-ev-info">
+              <div class="ms-ev-name">Life Drawing Workshop</div>
+              <div class="ms-ev-loc">10:00 AM · Studio 3</div>
+            </div>
+          </div>
+          <div style="height: 12px;"></div>
+          <div class="ms-tabbar">
+            <div class="ms-tab active">
+              <div class="ms-tab-icon">⌂</div>
+              Home
+            </div>
+            <div class="ms-tab">
+              <div class="ms-tab-icon">◈</div>
+              Exhibitions
+            </div>
+            <div class="ms-tab">
+              <div class="ms-tab-icon">⊡</div>
+              Events
+            </div>
+            <div class="ms-tab">
+              <div class="ms-tab-icon">◎</div>
+              Visit
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Exhibitions -->
+    <div class="mobile-container">
+      <div class="mobile-label">02 — Exhibitions</div>
+      <div class="mobile-frame">
+        <div class="mobile-notch"></div>
+        <div class="mobile-screen">
+          <div class="ms2-filter">
+            <div class="ms2-title">Exhibitions</div>
+            <div class="ms2-pills">
+              <span class="ms2-pill active">All</span>
+              <span class="ms2-pill">Open</span>
+              <span class="ms2-pill">Upcoming</span>
+              <span class="ms2-pill">Permanent</span>
+            </div>
+          </div>
+          <div class="ms2-card">
+            <div class="ms2-card-img ms2-img-1"></div>
+            <div class="ms2-card-body">
+              <span class="ms2-status open">Open</span>
+              <div class="ms2-card-name">Luminescence</div>
+              <div class="ms2-card-sub">Contemporary Glass Art · Jun 5 – Sep 8</div>
+            </div>
+          </div>
+          <div class="ms2-card">
+            <div class="ms2-card-img ms2-img-2"></div>
+            <div class="ms2-card-body">
+              <span class="ms2-status soon">Opens Soon</span>
+              <div class="ms2-card-name">Revisions</div>
+              <div class="ms2-card-sub">Feminist Sculptors 1960–80 · Jun 12 – Oct 20</div>
+            </div>
+          </div>
+          <div class="ms2-card">
+            <div class="ms2-card-img ms2-img-3"></div>
+            <div class="ms2-card-body">
+              <span class="ms2-status always">Always Open</span>
+              <div class="ms2-card-name">Digital Kinetics</div>
+              <div class="ms2-card-sub">Chen Wei & Collective · Permanent</div>
+            </div>
+          </div>
+          <div style="height: 8px;"></div>
+          <div class="ms-tabbar">
+            <div class="ms-tab">
+              <div class="ms-tab-icon">⌂</div>
+              Home
+            </div>
+            <div class="ms-tab active">
+              <div class="ms-tab-icon">◈</div>
+              Exhibitions
+            </div>
+            <div class="ms-tab">
+              <div class="ms-tab-icon">⊡</div>
+              Events
+            </div>
+            <div class="ms-tab">
+              <div class="ms-tab-icon">◎</div>
+              Visit
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Book a Visit -->
+    <div class="mobile-container">
+      <div class="mobile-label">03 — Book a Visit</div>
+      <div class="mobile-frame">
+        <div class="mobile-notch"></div>
+        <div class="mobile-screen">
+          <div class="ms3-header">
+            <div class="ms3-back">←</div>
+            <div class="ms3-title">Book a Visit</div>
+            <div class="ms3-sub">Free to reserve · Pay-what-you-wish at the door</div>
+          </div>
+          <div class="ms3-body">
+            <div class="ms3-section-label">Select Date</div>
+            <div class="ms3-dates">
+              <div class="ms3-date">14</div>
+              <div class="ms3-date active">15</div>
+              <div class="ms3-date">16</div>
+              <div class="ms3-date">17</div>
+              <div class="ms3-date">18</div>
+            </div>
+            <div class="ms3-section-label">Select Time</div>
+            <div class="ms3-times">
+              <div class="ms3-time">10:00 AM</div>
+              <div class="ms3-time">12:00 PM</div>
+              <div class="ms3-time active">2:00 PM</div>
+              <div class="ms3-time">4:00 PM</div>
+            </div>
+            <div class="ms3-section-label">Number of Guests</div>
+            <div class="ms3-guests">
+              <div class="ms3-g-btn">−</div>
+              <div class="ms3-g-num">2 guests</div>
+              <div class="ms3-g-btn">+</div>
+            </div>
+            <div class="ms3-summary">
+              <div class="ms3-sum-title">Your reservation</div>
+              <div class="ms3-sum-text">Sunday, June 15, 2025 · 2:00 PM · 2 guests<br>Admission: Pay-what-you-wish at entry</div>
+            </div>
+            <div class="ms3-confirm">Confirm reservation</div>
+          </div>
+          <div class="ms-tabbar">
+            <div class="ms-tab">
+              <div class="ms-tab-icon">⌂</div>
+              Home
+            </div>
+            <div class="ms-tab">
+              <div class="ms-tab-icon">◈</div>
+              Exhibitions
+            </div>
+            <div class="ms-tab">
+              <div class="ms-tab-icon">⊡</div>
+              Events
+            </div>
+            <div class="ms-tab active">
+              <div class="ms-tab-icon">◎</div>
+              Visit
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- DESIGN SYSTEM -->
+<section class="design-system">
+  <div>
+    <div class="section-eyebrow">Design Language</div>
+    <h2 class="section-title" style="color: var(--paper);">A system built<br>for <em>cultural</em><br>institutions</h2>
+    <p class="ds-intro">The Meridian design system balances editorial refinement with functional clarity. Cormorant Garamond brings historical weight and warmth to headings, while DM Mono's geometric precision anchors labels and metadata — a typographic partnership that reflects both the museum's heritage and its forward-thinking program.</p>
+  </div>
+  <div class="ds-right">
+    <div>
+      <div class="ds-block-title">Color Palette</div>
+      <div class="colors-row">
+        <div class="color-chip">
+          <div class="color-swatch" style="background: #1a5c50;"></div>
+          <span class="color-name">Teal</span>
+        </div>
+        <div class="color-chip">
+          <div class="color-swatch" style="background: #2b8c77;"></div>
+          <span class="color-name">Teal Light</span>
+        </div>
+        <div class="color-chip">
+          <div class="color-swatch" style="background: #0f0f0e;"></div>
+          <span class="color-name">Ink</span>
+        </div>
+        <div class="color-chip">
+          <div class="color-swatch" style="background: #f5f2ec; border: 1px solid rgba(255,255,255,0.1);"></div>
+          <span class="color-name">Paper</span>
+        </div>
+        <div class="color-chip">
+          <div class="color-swatch" style="background: #c9a84c;"></div>
+          <span class="color-name">Gold</span>
+        </div>
+        <div class="color-chip">
+          <div class="color-swatch" style="background: #8c8880;"></div>
+          <span class="color-name">Warm Grey</span>
+        </div>
+      </div>
+    </div>
+    <div class="type-row">
+      <div class="ds-block-title" style="color: rgba(245,242,236,0.4); margin-bottom: 12px;">Typography</div>
+      <div class="type-sample">
+        <span class="type-label">Display</span>
+        <span style="font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 300; color: var(--paper); line-height: 1;">Cormorant</span>
+      </div>
+      <div class="type-sample">
+        <span class="type-label">Italic</span>
+        <span style="font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 300; font-style: italic; color: var(--teal-light); line-height: 1;">Garamond</span>
+      </div>
+      <div class="type-sample">
+        <span class="type-label">Body/UI</span>
+        <span style="font-family: 'DM Mono', monospace; font-size: 12px; color: rgba(245,242,236,0.6); letter-spacing: 0.05em;">DM Mono — Labels & UI</span>
+      </div>
+      <div class="type-sample">
+        <span class="type-label">Caps</span>
+        <span style="font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.25em; text-transform: uppercase; color: rgba(245,242,236,0.4);">Eyebrow Text Style</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- OUTCOMES -->
+<section class="outcomes" id="outcomes">
+  <div class="section-eyebrow">Results</div>
+  <h2 class="section-title">Impact that<br><em>matters</em></h2>
+
+  <div class="outcomes-grid">
+    <div class="outcome-cell">
+      <span class="outcome-num">3×</span>
+      <span class="outcome-title">Booking Conversion Rate</span>
+      <p class="outcome-desc">Online reservations tripled within the first quarter post-launch, driven by the frictionless mobile booking flow.</p>
+    </div>
+    <div class="outcome-cell">
+      <span class="outcome-num">68%</span>
+      <span class="outcome-title">Mobile Traffic Captured</span>
+      <p class="outcome-desc">The native iOS app immediately absorbed the majority of visits, matching the existing mobile traffic share that the old site was failing to serve.</p>
+    </div>
+    <div class="outcome-cell">
+      <span class="outcome-num">4.8★</span>
+      <span class="outcome-title">App Store Rating</span>
+      <p class="outcome-desc">Users praised the clean exhibition browsing experience and the simplicity of the visit booking flow in early reviews.</p>
+    </div>
+    <div class="outcome-cell">
+      <span class="outcome-num">−40%</span>
+      <span class="outcome-title">Phone Inquiry Volume</span>
+      <p class="outcome-desc">Inbound calls to the museum's front desk dropped significantly as the digital booking system became the primary reservation channel.</p>
+    </div>
+  </div>
+</section>
+
+<!-- REFLECTION -->
+<section class="reflection">
+  <div>
+    <div class="section-eyebrow" style="color: var(--teal);">Reflection</div>
+    <h2 class="section-title">What <em>we learned</em></h2>
+    <blockquote class="reflection-quote">
+      The best museum experience doesn't start at the entrance — it starts the moment someone decides to go.
+    </blockquote>
+  </div>
+  <div class="reflection-right">
+    <div class="reflection-item">
+      <div class="reflection-item-title">Context builds confidence</div>
+      <p class="reflection-item-body">Exhibition status badges (Open, Opens Soon, Always Open) significantly reduced user hesitation. Knowing whether you can see something today before you plan your trip removes a key anxiety for first-time visitors.</p>
+    </div>
+    <div class="reflection-item">
+      <div class="reflection-item-title">Friction is cumulative</div>
+      <p class="reflection-item-body">No single step of the old booking process was catastrophic — but the sum of small inconveniences (phone call + office hours + unclear admission pricing) created enough drag to abandon. Removing each one compounded the improvement.</p>
+    </div>
+    <div class="reflection-item">
+      <div class="reflection-item-title">Design tone shapes perception</div>
+      <p class="reflection-item-body">Usability testing revealed that the refined typographic approach and warm color palette made participants feel the museum was more prestigious — even before they booked. Aesthetic investment in the digital product elevated the institution's perceived quality.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-left">
+    <div class="footer-title">Meridian Arts</div>
+    <div class="footer-sub">
+      UI/UX Case Study · 2025<br>
+      Web Platform & iOS Application
+    </div>
+  </div>
+  <div class="footer-right">
+    Case study prepared by<br>
+    UX Design & Development<br>
+    <span style="color: var(--teal-light);">meridianarts.org</span>
+  </div>
+</footer>
+
+<script>
+  // Intersection observer for scroll animations
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.pain-point, .outcome-cell').forEach(el => {
+    observer.observe(el);
+  });
+
+  // Stagger pain points
+  document.querySelectorAll('.pain-point').forEach((el, i) => {
+    el.style.transitionDelay = `${i * 0.1}s`;
+  });
+
+  // Stagger outcome cells
+  document.querySelectorAll('.outcome-cell').forEach((el, i) => {
+    el.style.transitionDelay = `${i * 0.12}s`;
+  });
+
+  var themeBtn = document.getElementById('themeToggleBtn');
+  function applyTheme(isDark) {
+    document.documentElement.classList.add('theme-transition');
+    if (isDark) {
+      document.documentElement.setAttribute('data-theme', 'dark');
+      document.documentElement.classList.add('dark');
+      themeBtn.querySelector('.toggle-label').textContent = 'Light Mode';
+    } else {
+      document.documentElement.removeAttribute('data-theme');
+      document.documentElement.classList.remove('dark');
+      themeBtn.querySelector('.toggle-label').textContent = 'Dark Mode';
+    }
+    localStorage.setItem('case-study-theme', isDark ? 'dark' : 'light');
+    window.dispatchEvent(new CustomEvent('theme-changed', { detail: { isDark: isDark } }));
+    window.setTimeout(function() {
+      document.documentElement.classList.remove('theme-transition');
+    }, 450);
+  }
+  var savedTheme = localStorage.getItem('case-study-theme');
+  if (savedTheme === 'dark') applyTheme(true);
+  if (themeBtn) {
+    themeBtn.addEventListener('click', function() {
+      var dark = document.documentElement.classList.contains('dark');
+      applyTheme(!dark);
+    });
+  }
+
+  // Aurora waves inside the hero art panel
+  (function() {
+    var heroArt = document.querySelector('.hero-art');
+    var bgCanvas = document.getElementById('aurora-bg');
+    var fgCanvas = document.getElementById('aurora-fg');
+    if (!heroArt || !bgCanvas || !fgCanvas) return;
+
+    var bx = bgCanvas.getContext('2d');
+    var fx = fgCanvas.getContext('2d');
+    var W = 0;
+    var H = 0;
+    var dpr = 1;
+    var darkMode = document.documentElement.classList.contains('dark');
+
+    function updateAuroraTheme() {
+      darkMode = document.documentElement.classList.contains('dark');
+    }
+    window.addEventListener('theme-changed', function(event) {
+      darkMode = !!event.detail.isDark;
+    });
+
+    function resizeAurora() {
+      var rect = heroArt.getBoundingClientRect();
+      W = rect.width;
+      H = rect.height;
+      dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      [bgCanvas, fgCanvas].forEach(function(canvas) {
+        canvas.width = W * dpr;
+        canvas.height = H * dpr;
+        canvas.style.width = W + 'px';
+        canvas.style.height = H + 'px';
+        var ctx = canvas.getContext('2d');
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      });
+    }
+
+    function wave(nx, t, seed) {
+      return (
+        Math.sin(nx * 2.4 + t * 0.90 + seed) * 0.45 +
+        Math.sin(nx * 4.8 + t * 1.20 + seed * 1.4) * 0.23 +
+        Math.sin(nx * 1.2 + t * 0.50 + seed * 0.6) * 0.17
+      );
+    }
+
+    function lerpColor(a, b, f) {
+      return a.map(function(v, i) { return v + (b[i] - v) * f; });
+    }
+
+    function rampColor(u) {
+      u = ((u % 1) + 1) % 1;
+      var stops = [
+        [0.00, [235, 105,  20]],
+        [0.25, [200,  55, 140]],
+        [0.50, [110,  40, 220]],
+        [0.75, [ 30, 140, 230]],
+        [1.00, [  8, 210, 200]],
+      ];
+      for (var i = 1; i < stops.length; i++) {
+        var t0 = stops[i - 1][0], c0 = stops[i - 1][1];
+        var t1 = stops[i][0], c1 = stops[i][1];
+        if (u <= t1) return lerpColor(c0, c1, (u - t0) / (t1 - t0));
+      }
+      return stops[stops.length - 1][1];
+    }
+
+    var bands = [
+      { yCenter: 0.36, amp: 0.12, seed: 0.0, colorOff: 0.00, layers: 24, spread: 0.22 },
+      { yCenter: 0.65, amp: 0.10, seed: 2.73, colorOff: 0.32, layers: 18, spread: 0.12 },
+    ];
+
+    function spineY(band, nx, t) {
+      return band.yCenter * H + wave(nx * Math.PI, t, band.seed) * band.amp * H;
+    }
+
+    function drawVaporBand(band, t) {
+      var N = 120;
+      fx.save();
+      fx.globalCompositeOperation = darkMode ? 'screen' : 'lighter';
+      fx.lineCap = 'round';
+      for (var layer = 0; layer < band.layers; layer++) {
+        var u = layer / (band.layers - 1);
+        var norm = (u - 0.5) * 2;
+        var offset = norm * norm * Math.sign(norm);
+        var dy = offset * H * band.spread;
+        var alpha = (darkMode ? 0.038 : 0.052) * Math.exp(-3.0 * norm * norm);
+        if (alpha < 0.002) continue;
+
+        fx.beginPath();
+        for (var i = 0; i <= N; i++) {
+          var nx = i / N;
+          var x = nx * W;
+          var sy = spineY(band, nx, t);
+          var taper = Math.pow(nx, 0.7);
+          var wiggle = Math.sin(nx * Math.PI * 5 + t * 0.56 + layer * 0.38) * H * 0.007 * Math.abs(norm) * taper;
+          var y = sy + dy * taper + wiggle;
+          if (i === 0) fx.moveTo(x, y);
+          else fx.lineTo(x, y);
+        }
+
+        var grad = fx.createLinearGradient(0, 0, W, 0);
+        for (var s = 0; s <= 3; s++) {
+          var su = s / 3;
+          var colorU = ((su + band.colorOff + t * 0.04 + u * 0.05) % 1 + 1) % 1;
+          var rgb = rampColor(colorU);
+          var desat = 0.40 + 0.25 * Math.exp(-3 * norm * norm);
+          var rf = rgb[0] + (255 - rgb[0]) * (1 - desat);
+          var gf = rgb[1] + (255 - rgb[1]) * (1 - desat);
+          var bf = rgb[2] + (255 - rgb[2]) * (1 - desat);
+          grad.addColorStop(su, 'rgba(' + (rf | 0) + ',' + (gf | 0) + ',' + (bf | 0) + ',' + (alpha * (darkMode ? (0.35 + 0.65 * Math.pow(su, 0.8)) : (0.55 + 0.45 * Math.pow(su, 0.7)))) + ')');
+        }
+
+        fx.strokeStyle = grad;
+        fx.lineWidth = band === bands[0] ? 3 : 2.2;
+        fx.stroke();
+      }
+      fx.restore();
+    }
+
+    function drawAmbient(t) {
+      bx.clearRect(0, 0, W, H);
+      var paperColor = getComputedStyle(document.documentElement).getPropertyValue('--paper').trim() || (darkMode ? '#060608' : '#f5f2ec');
+      bx.fillStyle = paperColor;
+      bx.fillRect(0, 0, W, H);
+
+      var blobs = [
+        { x: 0.18, y: 0.36, r: 0.38, col: [200, 50, 170], a: 0.12 },
+        { x: 0.75, y: 0.60, r: 0.30, col: [25, 180, 235], a: 0.10 },
+      ];
+
+      blobs.forEach(function(b) {
+        var px = (b.x + Math.sin(t * 0.09 + b.y * 5) * 0.04) * W;
+        var py = (b.y + Math.cos(t * 0.11 + b.x * 4) * 0.02) * H;
+        var gr = bx.createRadialGradient(px, py, 0, px, py, b.r * W);
+        gr.addColorStop(0, 'rgba(' + b.col[0] + ',' + b.col[1] + ',' + b.col[2] + ',' + b.a + ')');
+        gr.addColorStop(1, 'rgba(' + b.col[0] + ',' + b.col[1] + ',' + b.col[2] + ',0)');
+        bx.fillStyle = gr;
+        bx.fillRect(0, 0, W, H);
+      });
+    }
+
+    var t = 0;
+    var frameCount = 0;
+
+    function frame() {
+      t += 0.022;
+      frameCount++;
+      if (frameCount % 3 === 0) drawAmbient(t);
+      fx.fillStyle = darkMode ? 'rgba(6,6,8,0.085)' : 'rgba(245,242,236,0.14)';
+      fx.fillRect(0, 0, W, H);
+      for (var i = 0; i < bands.length; i++) drawVaporBand(bands[i], t);
+      requestAnimationFrame(frame);
+    }
+
+    resizeAurora();
+    window.addEventListener('resize', resizeAurora);
+    if (window.ResizeObserver) {
+      new ResizeObserver(resizeAurora).observe(heroArt);
+    }
+    bx.clearRect(0, 0, W, H);
+    fx.clearRect(0, 0, W, H);
+    frame();
+  })();
+</script>
+</body>
+</html>

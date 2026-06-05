@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aurora Vapor</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#060608; overflow:hidden; width:100vw; height:100vh; }
+canvas { display:block; position:absolute; top:0; left:0; }
+#bg { z-index:0; }
+#fg { z-index:1; }
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+<canvas id="fg"></canvas>
+<script>
+const bg = document.getElementById('bg');
+const fg = document.getElementById('fg');
+const bx = bg.getContext('2d');
+const fx = fg.getContext('2d');
+let W, H;
+
+function resize() {
+  const dpr = window.devicePixelRatio || 1;
+  W = window.innerWidth;
+  H = window.innerHeight;
+  for (const c of [bg, fg]) {
+    c.width = W * dpr;
+    c.height = H * dpr;
+    c.style.width = W + 'px';
+    c.style.height = H + 'px';
+    c.getContext('2d').setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+}
+resize();
+window.addEventListener('resize', () => { resize(); });
+
+// Smooth multi-octave wave function
+function wave(nx, t, seed) {
+  return (
+    Math.sin(nx * 2.1 + t * 0.72 + seed)        * 0.45 +
+    Math.sin(nx * 4.3 + t * 1.10 + seed * 1.7)  * 0.28 +
+    Math.sin(nx * 1.1 + t * 0.48 + seed * 0.5)  * 0.18 +
+    Math.sin(nx * 7.1 + t * 1.60 + seed * 2.3)  * 0.09
+  );
+}
+
+// Color ramp: orange → magenta → violet → blue → cyan
+function rampColor(u) {
+  u = ((u % 1) + 1) % 1;
+  const stops = [
+    [0.00, [235, 105,  20]],
+    [0.18, [210,  55, 130]],
+    [0.38, [145,  45, 215]],
+    [0.58, [ 45,  90, 235]],
+    [0.78, [ 15, 175, 235]],
+    [1.00, [ 10, 220, 210]],
+  ];
+  for (let i = 1; i < stops.length; i++) {
+    const [t0, c0] = stops[i-1], [t1, c1] = stops[i];
+    if (u <= t1) {
+      const f = (u - t0) / (t1 - t0);
+      return stops[i-1][1].map((v,j) => v + (c1[j]-v)*f);
+    }
+  }
+  return stops[stops.length-1][1];
+}
+
+// Each "band" is a spine y-position function
+// We render each band as ~60 overlapping strokes at tiny alpha
+// to build up vaporous, smoky volume
+
+const bands = [
+  { yCenter: 0.36, amp: 0.13, seed: 0.0,  colorOff: 0.00, layers: 80, spread: 0.175 },
+  { yCenter: 0.65, amp: 0.11, seed: 2.73, colorOff: 0.35, layers: 58, spread: 0.085 },
+];
+
+function spineY(band, nx, t) {
+  return band.yCenter * H + wave(nx * Math.PI, t, band.seed) * band.amp * H;
+}
+
+function drawVaporBand(band, t) {
+  const N = 280; // x samples
+  const { layers, colorOff, amp, seed } = band;
+
+  // Stack many thin strokes offset perpendicularly around the spine
+  for (let layer = 0; layer < layers; layer++) {
+    // Each layer is offset from the spine by a random-ish amount
+    // distributed like a gaussian — most layers near center, few far out
+    const u_l = layer / (layers - 1);       // 0..1
+    const norm = (u_l - 0.5) * 2;           // -1..1
+    // Gaussian-ish: weight toward center
+    const offset = norm * norm * Math.sign(norm);  // cubic falloff
+    const spread = H * band.spread;
+    // Taper only on the LEFT end (tip) — right side stays thick/full
+    const taperPow = 0.65;
+    const dy = offset * spread;
+    // Alpha: high in center, near-zero at edges
+    const alpha = 0.022 * Math.exp(-4.0 * norm * norm);
+
+    if (alpha < 0.001) continue;
+
+    // Color slowly scrolls left-to-right + over time
+    // Also varies slightly per layer for depth
+    fx.beginPath();
+    for (let i = 0; i <= N; i++) {
+      const nx = i / N;
+      const x = nx * W;
+      const sy = spineY(band, nx, t);
+      // Taper: only left end converges to a point, right stays full
+      const taper = Math.pow(nx, taperPow);
+      const wiggle = Math.sin(nx * Math.PI * 5.3 + t * 0.6 + layer * 0.41) * H * 0.008 * Math.abs(norm) * taper;
+      const y = sy + dy * taper + wiggle;
+      i === 0 ? fx.moveTo(x, y) : fx.lineTo(x, y);
+    }
+
+    // Color: sample based on x position + time drift + layer tint
+    // Use a gradient along the path
+    const grad = fx.createLinearGradient(0, 0, W, 0);
+    const steps = 8;
+    for (let s = 0; s <= steps; s++) {
+      const su = s / steps;
+      const colorU = ((su + colorOff + t * 0.04 + u_l * 0.05) % 1 + 1) % 1;
+      const [r,g,b] = rampColor(colorU);
+      const desat = 0.6 + 0.4 * Math.exp(-3 * norm * norm);
+      const rf = r + (255-r)*(1-desat), gf = g + (255-g)*(1-desat), bf = b + (255-b)*(1-desat);
+      // Taper alpha: zero at left tip, full at right — one-sided
+      const edgeTaper = Math.pow(su, taperPow);
+      grad.addColorStop(su, `rgba(${rf|0},${gf|0},${bf|0},${alpha * edgeTaper})`);
+    }
+
+    fx.strokeStyle = grad;
+    fx.lineWidth = 3.2;
+    fx.stroke();
+  }
+}
+
+// Slow background color blobs for ambient depth
+function drawAmbient(t) {
+  bx.clearRect(0, 0, W, H);
+  bx.fillStyle = '#060608';
+  bx.fillRect(0, 0, W, H);
+
+  const blobs = [
+    { x: 0.18, y: 0.36, r: 0.42, col: [180, 60, 200], a: 0.14 },
+    { x: 0.55, y: 0.36, r: 0.38, col: [40,  90, 220], a: 0.12 },
+    { x: 0.82, y: 0.38, r: 0.36, col: [10, 185, 230], a: 0.11 },
+    { x: 0.25, y: 0.65, r: 0.33, col: [220,100,  30], a: 0.11 },
+    { x: 0.60, y: 0.65, r: 0.36, col: [120, 40, 210], a: 0.12 },
+    { x: 0.88, y: 0.63, r: 0.30, col: [15, 200, 220], a: 0.10 },
+  ];
+
+  for (const b of blobs) {
+    const px = (b.x + Math.sin(t * 0.09 + b.y * 5) * 0.04) * W;
+    const py = (b.y + Math.cos(t * 0.11 + b.x * 4) * 0.025) * H;
+    const gr = bx.createRadialGradient(px, py, 0, px, py, b.r * W);
+    const [r,g,bl] = b.col;
+    gr.addColorStop(0,   `rgba(${r},${g},${bl},${b.a})`);
+    gr.addColorStop(0.5, `rgba(${r},${g},${bl},${b.a * 0.4})`);
+    gr.addColorStop(1,   `rgba(${r},${g},${bl},0)`);
+    bx.fillStyle = gr;
+    bx.fillRect(0, 0, W, H);
+  }
+}
+
+let t = 0;
+let ambientTimer = 0;
+
+function frame() {
+  t += 0.022;
+  ambientTimer++;
+
+  // Ambient blobs redraw slowly
+  if (ambientTimer % 3 === 0) drawAmbient(t);
+
+  // Very slow fade — lets the vapor linger and blur into itself
+  fx.fillStyle = 'rgba(6,6,8,0.055)';
+  fx.fillRect(0, 0, W, H);
+
+  for (const band of bands) drawVaporBand(band, t);
+
+  requestAnimationFrame(frame);
+}
+
+// Init
+bx.fillStyle = '#060608';
+bx.fillRect(0, 0, W, H);
+fx.fillStyle = '#060608';
+fx.fillRect(0, 0, W, H);
+frame();
+</script>
+</body>
+</html>

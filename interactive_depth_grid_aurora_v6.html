@@ -1,0 +1,196 @@
+
+<div id="scene" style="background:#000;border-radius:12px;padding:28px 28px 20px;display:flex;flex-direction:column;align-items:center;gap:16px;">
+  <div id="panel" style="position:relative;width:100%;max-width:620px;height:340px;border-radius:4px;background:#000;">
+    <div id="grid" style="position:absolute;inset:0;display:grid;transform-style:preserve-3d;perspective:700px;perspective-origin:50% -20%;z-index:1;"></div>
+    <canvas id="overlay" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:10;"></canvas>
+  </div>
+  <p style="font-size:12px;color:#333;margin:0;letter-spacing:0.04em;text-transform:uppercase;">Hover to press cells</p>
+</div>
+
+<style>
+* { box-sizing:border-box; margin:0; padding:0; }
+body, html { background:#000; }
+.cell { position:relative; transform-style:preserve-3d; }
+.box {
+  position:absolute; inset:0; transform-style:preserve-3d;
+  transform:translateZ(0px);
+  transition:transform 2.4s cubic-bezier(0.16,1,0.3,1);
+}
+.cell.pressed .box { transform:translateZ(-80px); transition:transform 0.7s ease-in; }
+.face { position:absolute; }
+.face.top    { inset:0; background-repeat:no-repeat; }
+.face.bottom { inset:0; transform:translateZ(-55px); background:#000; }
+.face.front  { left:0;right:0;height:55px;top:100%;transform-origin:top center;transform:rotateX(-90deg); background:#000; }
+.face.back   { left:0;right:0;height:55px;bottom:100%;transform-origin:bottom center;transform:rotateX(90deg); background:#000; }
+.face.left   { top:0;bottom:0;width:55px;right:100%;transform-origin:right center;transform:rotateY(-90deg); background:#000; }
+.face.right  { top:0;bottom:0;width:55px;left:100%;transform-origin:left center;transform:rotateY(90deg); background:#000; }
+</style>
+
+<script>
+(function(){
+  const cols = 10, rows = 7;
+  const HOLD_MS = 1500;
+  const grid    = document.getElementById('grid');
+  const overlay = document.getElementById('overlay');
+  const panel   = document.getElementById('panel');
+  let ovCtx, W, H;
+  const cellEls = [];
+
+  const offscreen = document.createElement('canvas');
+  let offCtx;
+
+  grid.style.gridTemplateColumns = `repeat(${cols},1fr)`;
+  grid.style.gridTemplateRows    = `repeat(${rows},1fr)`;
+
+  for(let i = 0; i < cols * rows; i++){
+    const cell = document.createElement('div');
+    cell.className = 'cell';
+    cell.innerHTML = `<div class="box">
+      <div class="face top"></div>
+      <div class="face bottom"></div>
+      <div class="face front"></div>
+      <div class="face back"></div>
+      <div class="face left"></div>
+      <div class="face right"></div>
+    </div>`;
+    grid.appendChild(cell);
+    cellEls.push(cell);
+    cell.addEventListener('mouseenter', () => { clearTimeout(cell._t); cell.classList.add('pressed'); });
+    cell.addEventListener('mouseleave', () => { cell._t = setTimeout(() => cell.classList.remove('pressed'), HOLD_MS); });
+  }
+
+  const trapF = [
+    [0.16, 0.02],
+    [1.02, -0.02],
+    [1.02, 1.02],
+    [0.02, 0.78],
+  ];
+
+  function getTrap() { return trapF.map(([fx,fy]) => [fx*W, fy*H]); }
+
+  function pointInTrap(px, py) {
+    const poly = getTrap();
+    let inside = false;
+    for(let i=0,j=poly.length-1;i<poly.length;j=i++){
+      const [xi,yi]=poly[i],[xj,yj]=poly[j];
+      if(((yi>py)!==(yj>py))&&px<(xj-xi)*(py-yi)/(yj-yi)+xi) inside=!inside;
+    }
+    return inside;
+  }
+
+  function cellTouchesTrap(col, row, cW, cH) {
+    const x0=col*cW, y0=row*cH, x1=x0+cW, y1=y0+cH;
+    return pointInTrap((x0+x1)/2,(y0+y1)/2)
+      || pointInTrap(x0+2,y0+2) || pointInTrap(x1-2,y0+2)
+      || pointInTrap(x0+2,y1-2) || pointInTrap(x1-2,y1-2);
+  }
+
+  function drawAurora(t) {
+    offCtx.clearRect(0,0,W,H);
+    const p = t * 0.0006;
+    const h1 = (p * 40) % 360;
+
+    const poly = getTrap();
+    offCtx.save();
+    offCtx.beginPath();
+    offCtx.moveTo(poly[0][0], poly[0][1]);
+    for(let i=1;i<poly.length;i++) offCtx.lineTo(poly[i][0], poly[i][1]);
+    offCtx.closePath();
+    offCtx.clip();
+
+    offCtx.fillStyle = `hsl(${h1}, 65%, 35%)`;
+    offCtx.fillRect(0,0,W,H);
+
+    const g0 = offCtx.createLinearGradient(0, H, W, 0);
+    g0.addColorStop(0,   `hsla(${h1},      85%, 50%, 1.0)`);
+    g0.addColorStop(0.35,`hsla(${h1+50},   90%, 60%, 1.0)`);
+    g0.addColorStop(0.65,`hsla(${h1+110},  85%, 65%, 1.0)`);
+    g0.addColorStop(1,   `hsla(${h1+170},  80%, 55%, 1.0)`);
+    offCtx.fillStyle = g0; offCtx.fillRect(0,0,W,H);
+
+    const h2=(h1+80)%360;
+    const g1=offCtx.createRadialGradient(W*(0.45+0.18*Math.sin(p*0.8)),H*(0.45+0.18*Math.cos(p*1.1)),0,W*0.5,H*0.5,W*0.8);
+    g1.addColorStop(0,`hsla(${h2},100%,80%,0.75)`); g1.addColorStop(0.5,`hsla(${h2+60},90%,65%,0.4)`); g1.addColorStop(1,'rgba(0,0,0,0)');
+    offCtx.fillStyle=g1; offCtx.fillRect(0,0,W,H);
+
+    const h3=(h1+190)%360;
+    const g2=offCtx.createRadialGradient(W*(0.7+0.12*Math.cos(p*1.4)),H*(0.3+0.12*Math.sin(p*1.0)),0,W*0.7,H*0.3,W*0.55);
+    g2.addColorStop(0,`hsla(${h3},100%,75%,0.80)`); g2.addColorStop(0.45,`hsla(${h3+40},90%,65%,0.40)`); g2.addColorStop(1,'rgba(0,0,0,0)');
+    offCtx.fillStyle=g2; offCtx.fillRect(0,0,W,H);
+
+    offCtx.restore();
+  }
+
+  function applyColors() {
+    const url = offscreen.toDataURL();
+    const cW=W/cols, cH=H/rows;
+
+    cellEls.forEach((cell,i) => {
+      const col=i%cols, row=Math.floor(i/cols);
+      const cx=Math.round((col+0.5)*cW), cy=Math.round((row+0.5)*cH);
+      const top=cell.querySelector('.face.top');
+      const bottom=cell.querySelector('.face.bottom');
+      const front=cell.querySelector('.face.front');
+      const back=cell.querySelector('.face.back');
+      const left=cell.querySelector('.face.left');
+      const right=cell.querySelector('.face.right');
+
+      if(cellTouchesTrap(col,row,cW,cH)){
+        const d=offCtx.getImageData(cx,cy,1,1).data;
+        const r=d[0],g=d[1],b=d[2];
+        const dk=f=>`rgb(${Math.round(r*f)},${Math.round(g*f)},${Math.round(b*f)})`;
+
+        top.style.backgroundImage    = `url(${url})`;
+        top.style.backgroundSize     = `${W}px ${H}px`;
+        top.style.backgroundPosition = `-${Math.round(col*cW)}px -${Math.round(row*cH)}px`;
+        top.style.backgroundColor    = 'transparent';
+
+        bottom.style.backgroundImage=''; bottom.style.background=dk(0.10);
+        front.style.backgroundImage='';  front.style.background=dk(0.42);
+        back.style.backgroundImage='';   back.style.background=dk(0.22);
+        left.style.backgroundImage='';   left.style.background=dk(0.30);
+        right.style.backgroundImage='';  right.style.background=dk(0.30);
+      } else {
+        // Fully opaque black — no see-through
+        top.style.backgroundImage='';   top.style.background='#000';
+        bottom.style.backgroundImage=''; bottom.style.background='#000';
+        front.style.backgroundImage='';  front.style.background='#000';
+        back.style.backgroundImage='';   back.style.background='#000';
+        left.style.backgroundImage='';   left.style.background='#000';
+        right.style.backgroundImage='';  right.style.background='#000';
+      }
+    });
+  }
+
+  function drawOverlay() {
+    ovCtx.clearRect(0,0,W,H);
+    const poly = getTrap();
+    ovCtx.beginPath();
+    ovCtx.moveTo(poly[0][0], poly[0][1]);
+    for(let i=1;i<poly.length;i++) ovCtx.lineTo(poly[i][0],poly[i][1]);
+    ovCtx.closePath();
+    ovCtx.strokeStyle='rgba(255,255,255,0.15)';
+    ovCtx.lineWidth=1;
+    ovCtx.stroke();
+  }
+
+  function resize() {
+    W=panel.offsetWidth; H=panel.offsetHeight;
+    offscreen.width=W; offscreen.height=H;
+    overlay.width=W; overlay.height=H;
+  }
+
+  function loop(t) {
+    drawAurora(t);
+    applyColors();
+    drawOverlay();
+    requestAnimationFrame(loop);
+  }
+
+  resize();
+  offCtx=offscreen.getContext('2d');
+  ovCtx=overlay.getContext('2d');
+  requestAnimationFrame(loop);
+  window.addEventListener('resize', resize);
+})();
+</script>

@@ -1,0 +1,2700 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Case Study — Thriving Paws | Shopify Pet Essentials Store</title>
+        <link
+            href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+            rel="stylesheet"
+        />
+        <link
+            href="https://cdn.jsdelivr.net/npm/@fontsource/inter@4.5.15/index.css"
+            rel="stylesheet"
+        />
+        <link
+            href="https://cdn.jsdelivr.net/npm/@fontsource/playfair-display@4.5.15/index.css"
+            rel="stylesheet"
+        />
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+        <style>
+            :root {
+                --paw-primary: #2d6a4f;
+                --paw-secondary: #95d5b2;
+                --paw-accent: #d4a373;
+                --paw-dark: #1b4332;
+                --paw-light: #f8f4e8;
+                --paw-warm: #e07a5f;
+                --paw-sand: #f2e8cf;
+            }
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            html {
+                scroll-behavior: smooth;
+            }
+            body {
+                font-family: "Inter", sans-serif;
+                background: var(--paw-light);
+                color: #1a1a2e;
+                overflow-x: hidden;
+            }
+            .font-playfair {
+                font-family: "Playfair Display", serif;
+            }
+
+            ::-webkit-scrollbar {
+                width: 6px;
+            }
+            ::-webkit-scrollbar-track {
+                background: var(--paw-light);
+            }
+            ::-webkit-scrollbar-thumb {
+                background: var(--paw-secondary);
+                border-radius: 3px;
+            }
+
+            .progress-bar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 3px;
+                background: linear-gradient(
+                    90deg,
+                    var(--paw-primary),
+                    var(--paw-accent)
+                );
+                z-index: 1001;
+            }
+
+            .nav {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 1000;
+                padding: 1.2rem 2rem;
+                transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            }
+            .nav.scrolled {
+                background: rgba(255, 255, 255, 0.95);
+                backdrop-filter: blur(20px);
+                box-shadow: 0 2px 30px rgba(0, 0, 0, 0.06);
+                padding: 0.8rem 2rem;
+            }
+            .nav-inner {
+                max-width: 1200px;
+                margin: 0 auto;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .nav-logo {
+                display: flex;
+                align-items: center;
+                gap: 0.6rem;
+                text-decoration: none;
+                color: var(--paw-dark);
+                font-weight: 700;
+                font-size: 1.15rem;
+            }
+            .nav-logo svg {
+                width: 30px;
+                height: 30px;
+            }
+            .nav-links {
+                display: flex;
+                gap: 2rem;
+                list-style: none;
+            }
+            .nav-links a {
+                text-decoration: none;
+                color: #555;
+                font-size: 0.88rem;
+                font-weight: 500;
+                transition: color 0.3s;
+                position: relative;
+            }
+            .nav-links a::after {
+                content: "";
+                position: absolute;
+                bottom: -4px;
+                left: 0;
+                width: 0;
+                height: 2px;
+                background: var(--paw-primary);
+                transition: width 0.3s;
+            }
+            .nav-links a:hover {
+                color: var(--paw-primary);
+            }
+            .nav-links a:hover::after {
+                width: 100%;
+            }
+            .nav-badge {
+                background: var(--paw-primary);
+                color: white;
+                padding: 0.45rem 1.2rem;
+                border-radius: 50px;
+                font-size: 0.78rem;
+                font-weight: 600;
+                text-decoration: none;
+                transition: all 0.3s;
+            }
+            .nav-badge:hover {
+                background: var(--paw-dark);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 15px rgba(45, 106, 79, 0.3);
+            }
+
+            .hero {
+                min-height: 100vh;
+                display: flex;
+                align-items: center;
+                position: relative;
+                overflow: hidden;
+                background: linear-gradient(
+                    160deg,
+                    var(--paw-light) 0%,
+                    #fff 40%,
+                    var(--paw-sand) 100%
+                );
+            }
+            .hero-bg-shapes {
+                position: absolute;
+                inset: 0;
+                pointer-events: none;
+            }
+            .hero-shape {
+                position: absolute;
+                border-radius: 50%;
+                opacity: 0.06;
+            }
+            .hero-shape-1 {
+                width: 600px;
+                height: 600px;
+                background: var(--paw-primary);
+                top: -200px;
+                right: -100px;
+            }
+            .hero-shape-2 {
+                width: 400px;
+                height: 400px;
+                background: var(--paw-accent);
+                bottom: -100px;
+                left: -100px;
+            }
+            .hero-shape-3 {
+                width: 200px;
+                height: 200px;
+                background: var(--paw-secondary);
+                top: 40%;
+                left: 30%;
+            }
+
+            .hero-content {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 8rem 2rem 4rem;
+                display: grid;
+                grid-template-columns: 1.1fr 0.9fr;
+                gap: 4rem;
+                align-items: center;
+                position: relative;
+                z-index: 2;
+            }
+
+            .hero-tag {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.6rem;
+                background: rgba(45, 106, 79, 0.08);
+                color: var(--paw-primary);
+                padding: 0.5rem 1.3rem;
+                border-radius: 50px;
+                font-size: 0.82rem;
+                font-weight: 600;
+                margin-bottom: 1.5rem;
+                border: 1px solid rgba(45, 106, 79, 0.15);
+            }
+            .hero-tag .dot {
+                width: 8px;
+                height: 8px;
+                background: var(--paw-primary);
+                border-radius: 50%;
+                animation: pulse-dot 2s infinite;
+            }
+            @keyframes pulse-dot {
+                0%,
+                100% {
+                    opacity: 1;
+                    transform: scale(1);
+                }
+                50% {
+                    opacity: 0.4;
+                    transform: scale(1.4);
+                }
+            }
+
+            .hero h1 {
+                font-family: "Playfair Display", serif;
+                font-size: 3.2rem;
+                line-height: 1.18;
+                color: var(--paw-dark);
+                margin-bottom: 1.3rem;
+            }
+            .hero h1 span {
+                color: var(--paw-primary);
+                position: relative;
+            }
+            .hero h1 span::after {
+                content: "";
+                position: absolute;
+                bottom: 4px;
+                left: 0;
+                width: 100%;
+                height: 10px;
+                background: var(--paw-secondary);
+                opacity: 0.3;
+                z-index: -1;
+                border-radius: 4px;
+            }
+            .hero-desc {
+                font-size: 1.08rem;
+                line-height: 1.75;
+                color: #555;
+                margin-bottom: 2rem;
+                max-width: 520px;
+            }
+
+            .hero-meta {
+                display: flex;
+                gap: 2.5rem;
+                margin-bottom: 2.2rem;
+                flex-wrap: wrap;
+            }
+            .hero-meta-item {
+                display: flex;
+                flex-direction: column;
+            }
+            .hero-meta-item .label {
+                font-size: 0.7rem;
+                text-transform: uppercase;
+                letter-spacing: 1.8px;
+                color: #aaa;
+                font-weight: 600;
+                margin-bottom: 0.2rem;
+            }
+            .hero-meta-item .value {
+                font-size: 0.95rem;
+                font-weight: 700;
+                color: var(--paw-dark);
+            }
+
+            .hero-buttons {
+                display: flex;
+                gap: 1rem;
+                flex-wrap: wrap;
+            }
+            .btn-primary {
+                background: var(--paw-primary);
+                color: white;
+                padding: 0.95rem 2rem;
+                border-radius: 50px;
+                text-decoration: none;
+                font-weight: 600;
+                font-size: 0.92rem;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+                transition: all 0.3s;
+                border: none;
+                cursor: pointer;
+            }
+            .btn-primary:hover {
+                background: var(--paw-dark);
+                transform: translateY(-3px);
+                box-shadow: 0 10px 30px rgba(45, 106, 79, 0.25);
+            }
+            .btn-secondary {
+                background: transparent;
+                color: var(--paw-primary);
+                padding: 0.95rem 2rem;
+                border-radius: 50px;
+                text-decoration: none;
+                font-weight: 600;
+                font-size: 0.92rem;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+                transition: all 0.3s;
+                border: 2px solid rgba(45, 106, 79, 0.3);
+                cursor: pointer;
+            }
+            .btn-secondary:hover {
+                background: var(--paw-primary);
+                color: white;
+                border-color: var(--paw-primary);
+                transform: translateY(-3px);
+            }
+
+            .hero-visual {
+                position: relative;
+            }
+            .hero-card {
+                background: white;
+                border-radius: 24px;
+                padding: 2rem;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+                position: relative;
+                overflow: hidden;
+            }
+            .hero-card-header {
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                margin-bottom: 1.5rem;
+            }
+            .hero-card-logo {
+                width: 48px;
+                height: 48px;
+                background: linear-gradient(
+                    135deg,
+                    var(--paw-primary),
+                    var(--paw-secondary)
+                );
+                border-radius: 14px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .hero-card-logo svg {
+                width: 28px;
+                height: 28px;
+            }
+            .hero-card-title {
+                font-weight: 700;
+                font-size: 1.1rem;
+                color: var(--paw-dark);
+            }
+            .hero-card-subtitle {
+                font-size: 0.78rem;
+                color: #999;
+            }
+            .hero-card-stats {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+                margin-bottom: 1.5rem;
+            }
+            .hero-card-stat {
+                background: var(--paw-light);
+                border-radius: 12px;
+                padding: 1rem;
+                text-align: center;
+            }
+            .hero-card-stat .num {
+                font-size: 1.4rem;
+                font-weight: 800;
+                color: var(--paw-primary);
+            }
+            .hero-card-stat .lbl {
+                font-size: 0.7rem;
+                color: #888;
+                margin-top: 0.2rem;
+            }
+            .hero-card-chart {
+                background: var(--paw-light);
+                border-radius: 12px;
+                padding: 1rem;
+                height: 100px;
+                position: relative;
+                overflow: hidden;
+            }
+            .chart-bars {
+                display: flex;
+                align-items: flex-end;
+                gap: 6px;
+                height: 70px;
+                padding-top: 10px;
+            }
+            .chart-bar {
+                flex: 1;
+                background: linear-gradient(
+                    to top,
+                    var(--paw-primary),
+                    var(--paw-secondary)
+                );
+                border-radius: 4px 4px 0 0;
+                min-height: 8px;
+                transition: height 1s ease;
+            }
+
+            .hero-float-card {
+                position: absolute;
+                background: white;
+                border-radius: 16px;
+                padding: 0.9rem 1.3rem;
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+                animation: float 4s ease-in-out infinite;
+                z-index: 3;
+            }
+            .hero-float-card.card-1 {
+                bottom: -15px;
+                left: -25px;
+            }
+            .hero-float-card.card-2 {
+                top: 10px;
+                right: -20px;
+                animation-delay: 2s;
+            }
+            .hero-float-card.card-3 {
+                bottom: 60px;
+                right: -30px;
+                animation-delay: 1s;
+            }
+            @keyframes float {
+                0%,
+                100% {
+                    transform: translateY(0);
+                }
+                50% {
+                    transform: translateY(-12px);
+                }
+            }
+            .float-card-number {
+                font-size: 1.3rem;
+                font-weight: 800;
+                color: var(--paw-primary);
+            }
+            .float-card-label {
+                font-size: 0.7rem;
+                color: #999;
+                font-weight: 500;
+            }
+
+            .section {
+                padding: 7rem 2rem;
+            }
+            .section-inner {
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+            .section-label {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.6rem;
+                font-size: 0.78rem;
+                text-transform: uppercase;
+                letter-spacing: 2.5px;
+                color: var(--paw-primary);
+                font-weight: 700;
+                margin-bottom: 1rem;
+            }
+            .section-label::before {
+                content: "";
+                width: 28px;
+                height: 2px;
+                background: var(--paw-primary);
+                border-radius: 2px;
+            }
+            .section-title {
+                font-family: "Playfair Display", serif;
+                font-size: 2.6rem;
+                color: var(--paw-dark);
+                margin-bottom: 1.3rem;
+                line-height: 1.2;
+            }
+            .section-desc {
+                font-size: 1.05rem;
+                color: #666;
+                line-height: 1.8;
+                max-width: 650px;
+            }
+
+            .overview {
+                background: white;
+                position: relative;
+            }
+            .overview-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 5rem;
+                align-items: center;
+                margin-top: 3rem;
+            }
+            .overview-visual {
+                position: relative;
+            }
+            .overview-image-card {
+                background: linear-gradient(
+                    135deg,
+                    #e8f5e9 0%,
+                    #c8e6c9 50%,
+                    #a5d6a7 100%
+                );
+                border-radius: 24px;
+                height: 420px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                position: relative;
+                overflow: hidden;
+                box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
+            }
+            .overview-image-card .paw-big {
+                font-size: 6rem;
+                margin-bottom: 1rem;
+                filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+            }
+            .overview-image-card h3 {
+                font-family: "Playfair Display", serif;
+                font-size: 1.8rem;
+                color: var(--paw-dark);
+                margin-bottom: 0.3rem;
+            }
+            .overview-image-card p {
+                color: var(--paw-primary);
+                font-weight: 600;
+                font-size: 0.9rem;
+            }
+            .overview-image-card::before {
+                content: "";
+                position: absolute;
+                inset: 0;
+                background: radial-gradient(
+                    circle at 30% 70%,
+                    rgba(255, 255, 255, 0.3) 0%,
+                    transparent 60%
+                );
+            }
+            .overview-badge {
+                position: absolute;
+                background: white;
+                border-radius: 14px;
+                padding: 0.8rem 1.2rem;
+                box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+                display: flex;
+                align-items: center;
+                gap: 0.6rem;
+            }
+            .overview-badge.top-right {
+                top: -15px;
+                right: -15px;
+            }
+            .overview-badge.bottom-left {
+                bottom: -15px;
+                left: -15px;
+            }
+            .overview-badge .badge-icon {
+                width: 36px;
+                height: 36px;
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.1rem;
+            }
+            .overview-badge .badge-icon.green {
+                background: rgba(45, 106, 79, 0.1);
+            }
+            .overview-badge .badge-icon.orange {
+                background: rgba(212, 163, 115, 0.15);
+            }
+            .overview-badge .badge-text .num {
+                font-weight: 800;
+                font-size: 0.95rem;
+                color: var(--paw-dark);
+            }
+            .overview-badge .badge-text .lbl {
+                font-size: 0.68rem;
+                color: #999;
+            }
+
+            .overview-stats {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 1.2rem;
+                margin-top: 2rem;
+            }
+            .overview-stat {
+                background: var(--paw-light);
+                border-radius: 14px;
+                padding: 1.3rem 1rem;
+                text-align: center;
+                transition: all 0.3s;
+                border: 1px solid transparent;
+            }
+            .overview-stat:hover {
+                transform: translateY(-5px);
+                border-color: var(--paw-secondary);
+                box-shadow: 0 8px 20px rgba(45, 106, 79, 0.08);
+            }
+            .overview-stat .stat-number {
+                font-size: 1.6rem;
+                font-weight: 800;
+                color: var(--paw-primary);
+            }
+            .overview-stat .stat-label {
+                font-size: 0.75rem;
+                color: #888;
+                margin-top: 0.3rem;
+                font-weight: 500;
+            }
+
+            .challenge {
+                background: linear-gradient(
+                    180deg,
+                    var(--paw-light) 0%,
+                    white 100%
+                );
+            }
+            .challenge-cards {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 1.8rem;
+                margin-top: 3rem;
+            }
+            .challenge-card {
+                background: white;
+                border-radius: 20px;
+                padding: 2.2rem 1.8rem;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+                transition: all 0.4s;
+                position: relative;
+                overflow: hidden;
+                border: 1px solid rgba(0, 0, 0, 0.04);
+            }
+            .challenge-card::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                height: 3px;
+                background: linear-gradient(
+                    90deg,
+                    var(--paw-primary),
+                    var(--paw-secondary)
+                );
+                transform: scaleX(0);
+                transition: transform 0.4s;
+                transform-origin: left;
+            }
+            .challenge-card:hover::before {
+                transform: scaleX(1);
+            }
+            .challenge-card:hover {
+                transform: translateY(-6px);
+                box-shadow: 0 12px 35px rgba(0, 0, 0, 0.08);
+            }
+            .challenge-icon {
+                width: 52px;
+                height: 52px;
+                background: rgba(45, 106, 79, 0.08);
+                border-radius: 14px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin-bottom: 1.3rem;
+                font-size: 1.4rem;
+            }
+            .challenge-card h3 {
+                font-size: 1.1rem;
+                font-weight: 700;
+                color: var(--paw-dark);
+                margin-bottom: 0.7rem;
+            }
+            .challenge-card p {
+                font-size: 0.9rem;
+                color: #666;
+                line-height: 1.65;
+            }
+
+            .solution {
+                background: var(--paw-dark);
+                color: white;
+                position: relative;
+                overflow: hidden;
+            }
+            .solution::before {
+                content: "";
+                position: absolute;
+                inset: 0;
+                opacity: 0.04;
+                background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='20' cy='20' r='2' fill='%23fff'/%3E%3C/svg%3E");
+            }
+            .solution .section-label {
+                color: var(--paw-secondary);
+            }
+            .solution .section-label::before {
+                background: var(--paw-secondary);
+            }
+            .solution .section-title {
+                color: white;
+            }
+            .solution .section-desc {
+                color: rgba(255, 255, 255, 0.6);
+            }
+            .solution-features {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.8rem;
+                margin-top: 3rem;
+                position: relative;
+                z-index: 1;
+            }
+            .solution-feature {
+                background: rgba(255, 255, 255, 0.04);
+                border: 1px solid rgba(255, 255, 255, 0.08);
+                border-radius: 20px;
+                padding: 2.2rem 1.8rem;
+                transition: all 0.4s;
+            }
+            .solution-feature:hover {
+                background: rgba(255, 255, 255, 0.08);
+                border-color: var(--paw-secondary);
+                transform: translateY(-4px);
+            }
+            .solution-feature .feature-number {
+                font-size: 2.8rem;
+                font-weight: 800;
+                color: var(--paw-secondary);
+                opacity: 0.2;
+                line-height: 1;
+                margin-bottom: 0.8rem;
+            }
+            .solution-feature h3 {
+                font-size: 1.1rem;
+                font-weight: 700;
+                margin-bottom: 0.7rem;
+                color: white;
+            }
+            .solution-feature p {
+                font-size: 0.9rem;
+                color: rgba(255, 255, 255, 0.55);
+                line-height: 1.7;
+            }
+
+            .video-section {
+                background: white;
+            }
+            .video-container {
+                margin-top: 3rem;
+                position: relative;
+            }
+            .video-wrapper {
+                position: relative;
+                border-radius: 24px;
+                overflow: hidden;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+                background: #000;
+                aspect-ratio: 16/9;
+                max-width: 800px;
+                margin: 0 auto;
+            }
+            .video-placeholder {
+                width: 100%;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                background: linear-gradient(
+                    135deg,
+                    #1a1a2e 0%,
+                    #16213e 50%,
+                    #0f3460 100%
+                );
+                position: relative;
+                overflow: hidden;
+                cursor: pointer;
+            }
+            .video-placeholder::before {
+                content: "";
+                position: absolute;
+                inset: 0;
+                background: radial-gradient(
+                    circle at center,
+                    rgba(45, 106, 79, 0.15) 0%,
+                    transparent 70%
+                );
+            }
+            .play-button {
+                width: 80px;
+                height: 80px;
+                background: rgba(255, 255, 255, 0.15);
+                backdrop-filter: blur(10px);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.3s;
+                border: 2px solid rgba(255, 255, 255, 0.3);
+                z-index: 1;
+            }
+            .play-button:hover {
+                background: var(--paw-primary);
+                border-color: var(--paw-primary);
+                transform: scale(1.1);
+            }
+            .play-button svg {
+                width: 30px;
+                height: 30px;
+                fill: white;
+                margin-left: 4px;
+            }
+            .video-label {
+                margin-top: 1.5rem;
+                color: rgba(255, 255, 255, 0.7);
+                font-size: 0.9rem;
+                z-index: 1;
+            }
+            .video-label strong {
+                color: white;
+            }
+            .video-float-1 {
+                position: absolute;
+                top: -20px;
+                right: -20px;
+                background: white;
+                border-radius: 16px;
+                padding: 1rem 1.3rem;
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+                animation: float 4s ease-in-out infinite;
+            }
+            .video-float-2 {
+                position: absolute;
+                bottom: -15px;
+                left: -20px;
+                background: white;
+                border-radius: 16px;
+                padding: 1rem 1.3rem;
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+                animation: float 4s ease-in-out infinite;
+                animation-delay: 2s;
+            }
+
+            .features-grid {
+                background: var(--paw-light);
+            }
+            .features-grid-inner {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 1.3rem;
+                margin-top: 3rem;
+            }
+            .feature-item {
+                background: white;
+                border-radius: 16px;
+                padding: 1.8rem 1.3rem;
+                text-align: center;
+                transition: all 0.35s;
+                cursor: default;
+                border: 1px solid rgba(0, 0, 0, 0.04);
+            }
+            .feature-item:hover {
+                background: var(--paw-primary);
+                color: white;
+                transform: translateY(-6px);
+                box-shadow: 0 12px 30px rgba(45, 106, 79, 0.15);
+            }
+            .feature-item:hover .feature-item-icon {
+                background: rgba(255, 255, 255, 0.2);
+            }
+            .feature-item:hover .feature-item-title {
+                color: white;
+            }
+            .feature-item:hover .feature-item-desc {
+                color: rgba(255, 255, 255, 0.8);
+            }
+            .feature-item-icon {
+                width: 48px;
+                height: 48px;
+                background: rgba(45, 106, 79, 0.08);
+                border-radius: 14px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 1rem;
+                font-size: 1.2rem;
+                transition: all 0.3s;
+            }
+            .feature-item-title {
+                font-size: 0.9rem;
+                font-weight: 700;
+                color: var(--paw-dark);
+                margin-bottom: 0.4rem;
+                transition: color 0.3s;
+            }
+            .feature-item-desc {
+                font-size: 0.78rem;
+                color: #888;
+                line-height: 1.5;
+                transition: color 0.3s;
+            }
+
+            .results {
+                background: linear-gradient(
+                    135deg,
+                    var(--paw-light) 0%,
+                    #fff 50%,
+                    var(--paw-sand) 100%
+                );
+                position: relative;
+            }
+            .results-grid {
+                display: grid;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 1.5rem;
+                margin-top: 3rem;
+            }
+            .result-card {
+                background: white;
+                border-radius: 20px;
+                padding: 2rem 1.5rem;
+                text-align: center;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+                transition: all 0.3s;
+                border: 1px solid rgba(0, 0, 0, 0.04);
+                position: relative;
+                overflow: hidden;
+            }
+            .result-card::after {
+                content: "";
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                height: 3px;
+                background: linear-gradient(
+                    90deg,
+                    var(--paw-primary),
+                    var(--paw-secondary)
+                );
+                transform: scaleX(0);
+                transition: transform 0.3s;
+            }
+            .result-card:hover::after {
+                transform: scaleX(1);
+            }
+            .result-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+            }
+            .result-card .card-icon {
+                font-size: 2rem;
+                margin-bottom: 0.8rem;
+            }
+            .result-card .metric-value {
+                font-size: 2.2rem;
+                font-weight: 800;
+                color: var(--paw-primary);
+                line-height: 1;
+            }
+            .result-card .metric-change {
+                font-size: 0.8rem;
+                color: #22c55e;
+                font-weight: 600;
+                margin-top: 0.3rem;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.3rem;
+            }
+            .result-card .metric-label {
+                font-size: 0.82rem;
+                color: #888;
+                margin-top: 0.5rem;
+                font-weight: 500;
+            }
+            .result-card.highlight {
+                background: var(--paw-primary);
+                color: white;
+            }
+            .result-card.highlight .metric-value {
+                color: white;
+            }
+            .result-card.highlight .metric-label {
+                color: rgba(255, 255, 255, 0.7);
+            }
+            .result-card.highlight .metric-change {
+                color: var(--paw-secondary);
+            }
+            .result-card.highlight::after {
+                background: var(--paw-secondary);
+            }
+
+            .timeline-section {
+                background: white;
+            }
+            .timeline {
+                position: relative;
+                margin-top: 3rem;
+                padding-left: 3rem;
+            }
+            .timeline::before {
+                content: "";
+                position: absolute;
+                left: 15px;
+                top: 0;
+                bottom: 0;
+                width: 2px;
+                background: linear-gradient(
+                    to bottom,
+                    var(--paw-primary),
+                    var(--paw-secondary)
+                );
+            }
+            .timeline-item {
+                position: relative;
+                margin-bottom: 2.5rem;
+                padding-left: 2rem;
+            }
+            .timeline-item::before {
+                content: "";
+                position: absolute;
+                left: -2.35rem;
+                top: 0.4rem;
+                width: 14px;
+                height: 14px;
+                background: var(--paw-primary);
+                border-radius: 50%;
+                border: 3px solid white;
+                box-shadow: 0 0 0 3px var(--paw-primary);
+                transition: all 0.3s;
+            }
+            .timeline-item:hover::before {
+                transform: scale(1.3);
+            }
+            .timeline-phase {
+                font-size: 0.72rem;
+                text-transform: uppercase;
+                letter-spacing: 2px;
+                color: var(--paw-primary);
+                font-weight: 700;
+                margin-bottom: 0.4rem;
+            }
+            .timeline-title {
+                font-size: 1.15rem;
+                font-weight: 700;
+                color: var(--paw-dark);
+                margin-bottom: 0.4rem;
+            }
+            .timeline-desc {
+                font-size: 0.9rem;
+                color: #666;
+                line-height: 1.65;
+                max-width: 550px;
+            }
+            .timeline-duration {
+                display: inline-block;
+                background: rgba(45, 106, 79, 0.08);
+                color: var(--paw-primary);
+                padding: 0.3rem 0.8rem;
+                border-radius: 50px;
+                font-size: 0.72rem;
+                font-weight: 600;
+                margin-top: 0.5rem;
+            }
+
+            .testimonial-section {
+                background: var(--paw-primary);
+                color: white;
+                text-align: center;
+                position: relative;
+                overflow: hidden;
+            }
+            .testimonial-section::before {
+                content: '"';
+                position: absolute;
+                top: -60px;
+                left: 50%;
+                transform: translateX(-50%);
+                font-size: 25rem;
+                font-family: "Playfair Display", serif;
+                color: rgba(255, 255, 255, 0.04);
+                line-height: 1;
+            }
+            .testimonial-quote {
+                font-family: "Playfair Display", serif;
+                font-size: 1.6rem;
+                line-height: 1.6;
+                max-width: 750px;
+                margin: 0 auto 2rem;
+                position: relative;
+                z-index: 1;
+                font-style: italic;
+            }
+            .testimonial-author {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 1rem;
+                position: relative;
+                z-index: 1;
+            }
+            .testimonial-avatar {
+                width: 52px;
+                height: 52px;
+                border-radius: 50%;
+                background: var(--paw-secondary);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.3rem;
+                font-weight: 700;
+                color: var(--paw-dark);
+            }
+            .testimonial-info .name {
+                font-weight: 700;
+                font-size: 0.95rem;
+            }
+            .testimonial-info .role {
+                font-size: 0.82rem;
+                opacity: 0.65;
+            }
+
+            .tech-stack {
+                background: var(--paw-light);
+            }
+            .tech-grid {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 0.8rem;
+                margin-top: 2.5rem;
+                justify-content: center;
+            }
+            .tech-badge {
+                background: white;
+                border-radius: 50px;
+                padding: 0.7rem 1.3rem;
+                font-size: 0.85rem;
+                font-weight: 600;
+                color: var(--paw-dark);
+                display: flex;
+                align-items: center;
+                gap: 0.4rem;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+                transition: all 0.3s;
+                border: 1px solid rgba(0, 0, 0, 0.04);
+            }
+            .tech-badge:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+                background: var(--paw-primary);
+                color: white;
+                border-color: var(--paw-primary);
+            }
+
+            .cta-section {
+                background: linear-gradient(
+                    135deg,
+                    var(--paw-dark) 0%,
+                    var(--paw-primary) 100%
+                );
+                color: white;
+                text-align: center;
+                position: relative;
+                overflow: hidden;
+            }
+            .cta-section::before {
+                content: "";
+                position: absolute;
+                inset: 0;
+                background:
+                    radial-gradient(
+                        circle at 20% 50%,
+                        rgba(149, 213, 178, 0.1) 0%,
+                        transparent 50%
+                    ),
+                    radial-gradient(
+                        circle at 80% 50%,
+                        rgba(212, 163, 115, 0.08) 0%,
+                        transparent 50%
+                    );
+            }
+            .cta-content {
+                position: relative;
+                z-index: 1;
+            }
+            .cta-title {
+                font-family: "Playfair Display", serif;
+                font-size: 2.8rem;
+                margin-bottom: 1rem;
+            }
+            .cta-desc {
+                font-size: 1.05rem;
+                opacity: 0.75;
+                max-width: 550px;
+                margin: 0 auto 2rem;
+                line-height: 1.7;
+            }
+            .cta-buttons {
+                display: flex;
+                gap: 1rem;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            .btn-white {
+                background: white;
+                color: var(--paw-dark);
+                padding: 1rem 2.5rem;
+                border-radius: 50px;
+                text-decoration: none;
+                font-weight: 700;
+                font-size: 0.95rem;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+                transition: all 0.3s;
+                border: none;
+                cursor: pointer;
+            }
+            .btn-white:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            }
+            .btn-outline-white {
+                background: transparent;
+                color: white;
+                padding: 1rem 2.5rem;
+                border-radius: 50px;
+                text-decoration: none;
+                font-weight: 700;
+                font-size: 0.95rem;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+                transition: all 0.3s;
+                border: 2px solid rgba(255, 255, 255, 0.3);
+                cursor: pointer;
+            }
+            .btn-outline-white:hover {
+                border-color: white;
+                background: rgba(255, 255, 255, 0.1);
+                transform: translateY(-3px);
+            }
+
+            .footer {
+                background: #0a1a12;
+                color: rgba(255, 255, 255, 0.5);
+                padding: 2.5rem 2rem;
+                text-align: center;
+            }
+            .footer-inner {
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+            .footer-logo {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 0.5rem;
+                color: white;
+                font-weight: 700;
+                font-size: 1rem;
+                margin-bottom: 0.8rem;
+            }
+            .footer p {
+                font-size: 0.82rem;
+            }
+            .footer-domain {
+                color: var(--paw-secondary);
+                font-weight: 600;
+            }
+
+            .scroll-top {
+                position: fixed;
+                bottom: 2rem;
+                right: 2rem;
+                width: 46px;
+                height: 46px;
+                background: var(--paw-primary);
+                color: white;
+                border: none;
+                border-radius: 50%;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.1rem;
+                opacity: 0;
+                transform: translateY(20px);
+                transition: all 0.3s;
+                z-index: 999;
+                box-shadow: 0 4px 15px rgba(45, 106, 79, 0.3);
+            }
+            .scroll-top.visible {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            .scroll-top:hover {
+                background: var(--paw-dark);
+                transform: translateY(-3px);
+            }
+
+            .reveal {
+                opacity: 0;
+                transform: translateY(30px);
+                transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            }
+            .reveal.active {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            .reveal-delay-1 {
+                transition-delay: 0.1s;
+            }
+            .reveal-delay-2 {
+                transition-delay: 0.2s;
+            }
+            .reveal-delay-3 {
+                transition-delay: 0.3s;
+            }
+            .reveal-delay-4 {
+                transition-delay: 0.4s;
+            }
+
+            @media (max-width: 1024px) {
+                .hero-content {
+                    grid-template-columns: 1fr;
+                    text-align: center;
+                }
+                .hero-desc {
+                    margin: 0 auto 2rem;
+                }
+                .hero-meta {
+                    justify-content: center;
+                }
+                .hero-buttons {
+                    justify-content: center;
+                }
+                .hero-visual {
+                    max-width: 500px;
+                    margin: 0 auto;
+                }
+                .overview-grid {
+                    grid-template-columns: 1fr;
+                    gap: 3rem;
+                }
+                .overview-stats {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+                .challenge-cards {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+                .results-grid {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+                .features-grid-inner {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+            }
+            @media (max-width: 768px) {
+                .hero h1 {
+                    font-size: 2.2rem;
+                }
+                .section-title {
+                    font-size: 1.9rem;
+                }
+                .challenge-cards {
+                    grid-template-columns: 1fr;
+                }
+                .solution-features {
+                    grid-template-columns: 1fr;
+                }
+                .nav-links {
+                    display: none;
+                }
+                .cta-title {
+                    font-size: 1.8rem;
+                }
+                .testimonial-quote {
+                    font-size: 1.15rem;
+                }
+                .hero-float-card {
+                    display: none;
+                }
+                .results-grid {
+                    grid-template-columns: 1fr;
+                }
+                .features-grid-inner {
+                    grid-template-columns: 1fr 1fr;
+                }
+            }
+            @media (max-width: 480px) {
+                .hero h1 {
+                    font-size: 1.8rem;
+                }
+                .section {
+                    padding: 4rem 1.2rem;
+                }
+                .features-grid-inner {
+                    grid-template-columns: 1fr;
+                }
+                .overview-stats {
+                    grid-template-columns: 1fr;
+                }
+                .hero-meta {
+                    gap: 1.5rem;
+                }
+            }
+
+            .marquee-container {
+                overflow: hidden;
+                white-space: nowrap;
+                padding: 1rem 0;
+            }
+            .marquee-track {
+                display: inline-flex;
+                animation: marquee 30s linear infinite;
+            }
+            .marquee-item {
+                display: inline-flex;
+                align-items: center;
+                gap: 0.5rem;
+                padding: 0 2rem;
+                font-size: 0.85rem;
+                color: #888;
+                font-weight: 500;
+            }
+            .marquee-item span {
+                color: var(--paw-primary);
+                font-weight: 700;
+            }
+            @keyframes marquee {
+                0% {
+                    transform: translateX(0);
+                }
+                100% {
+                    transform: translateX(-50%);
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="progress-bar" id="progressBar"></div>
+
+        <nav class="nav" id="mainNav">
+            <div class="nav-inner">
+                <a href="../index.html" class="nav-badge" style="background: var(--paw-primary); color: white; display: inline-flex; align-items: center; gap: 0.5rem;">← Back to Portfolio</a>
+                <ul class="nav-links">
+                    <li><a href="#overview">Overview</a></li>
+                    <li><a href="#challenge">Challenge</a></li>
+                    <li><a href="#solution">Solution</a></li>
+                    <li><a href="#video">Our Cat</a></li>
+                    <li><a href="#results">Results</a></li>
+                    <li><a href="#timeline">Timeline</a></li>
+                </ul>
+                <a href="#cta" class="nav-badge">Start Your Project →</a>
+            </div>
+        </nav>
+
+        <section class="hero" id="hero">
+            <div class="hero-bg-shapes">
+                <div class="hero-shape hero-shape-1"></div>
+                <div class="hero-shape hero-shape-2"></div>
+                <div class="hero-shape hero-shape-3"></div>
+            </div>
+            <div class="hero-content">
+                <div class="hero-text">
+                    <div class="hero-tag">
+                        <span class="dot"></span> Shopify Case Study
+                    </div>
+                    <h1>
+                        From Passion Project to <span>Thriving Pet Store</span>
+                    </h1>
+                    <p class="hero-desc">
+                        How we helped Thriving Paws — a small startup by pet
+                        lovers — launch their first Shopify store for premium
+                        pet essentials, building a warm brand that resonates
+                        with fellow pet parents.
+                    </p>
+                    <div class="hero-meta">
+                        <div class="hero-meta-item">
+                            <span class="label">Client</span
+                            ><span class="value">Thriving Paws</span>
+                        </div>
+                        <div class="hero-meta-item">
+                            <span class="label">Platform</span
+                            ><span class="value">Shopify</span>
+                        </div>
+                        <div class="hero-meta-item">
+                            <span class="label">Type</span
+                            ><span class="value">Early-stage Startup</span>
+                        </div>
+                        <div class="hero-meta-item">
+                            <span class="label">Timeline</span
+                            ><span class="value">8 Weeks</span>
+                        </div>
+                    </div>
+                    <div class="hero-buttons">
+                        <a href="index.html" class="btn-primary"
+                            >Back to Main
+                            <svg
+                                width="14"
+                                height="14"
+                                viewBox="0 0 16 16"
+                                fill="none"
+                            >
+                                <path
+                                    d="M13 8H3M7 4l-4 4 4 4"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                /></svg
+                        ></a>
+                        <a
+                            href="https://thrivingpaws.store"
+                            target="_blank"
+                            class="btn-primary"
+                            >Visit Store
+                            <svg
+                                width="14"
+                                height="14"
+                                viewBox="0 0 16 16"
+                                fill="none"
+                            >
+                                <path
+                                    d="M3 8h10M9 4l4 4-4 4"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                /></svg
+                        ></a>
+                        <a href="#video" class="btn-secondary"
+                            >Watch Our Story
+                            <svg
+                                width="14"
+                                height="14"
+                                viewBox="0 0 16 16"
+                                fill="none"
+                            >
+                                <polygon
+                                    points="5,3 13,8 5,13"
+                                    fill="currentColor"
+                                /></svg
+                        ></a>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <div class="hero-card">
+                        <div class="hero-card-header">
+                            <div class="hero-card-logo">
+                                <svg viewBox="0 0 40 40" fill="none">
+                                    <ellipse
+                                        cx="20"
+                                        cy="28"
+                                        rx="8"
+                                        ry="6"
+                                        fill="white"
+                                    />
+                                    <circle
+                                        cx="12"
+                                        cy="16"
+                                        r="4"
+                                        fill="white"
+                                    />
+                                    <circle
+                                        cx="28"
+                                        cy="16"
+                                        r="4"
+                                        fill="white"
+                                    />
+                                    <circle cx="8" cy="24" r="3" fill="white" />
+                                    <circle
+                                        cx="32"
+                                        cy="24"
+                                        r="3"
+                                        fill="white"
+                                    />
+                                </svg>
+                            </div>
+                            <div>
+                                <div class="hero-card-title">
+                                    thrivingpaws.store
+                                </div>
+                                <div class="hero-card-subtitle">
+                                    Live since 2024
+                                </div>
+                            </div>
+                        </div>
+                        <div class="hero-card-stats">
+                            <div class="hero-card-stat">
+                                <div class="num">127</div>
+                                <div class="lbl">Products Live</div>
+                            </div>
+                            <div class="hero-card-stat">
+                                <div class="num">18</div>
+                                <div class="lbl">Brands Curated</div>
+                            </div>
+                        </div>
+                        <div class="hero-card-chart">
+                            <div
+                                style="
+                                    font-size: 0.72rem;
+                                    color: #888;
+                                    margin-bottom: 0.5rem;
+                                "
+                            >
+                                Monthly Visitors Growth
+                            </div>
+                            <div class="chart-bars" id="heroChart">
+                                <div
+                                    class="chart-bar"
+                                    style="height: 15%"
+                                ></div>
+                                <div
+                                    class="chart-bar"
+                                    style="height: 25%"
+                                ></div>
+                                <div
+                                    class="chart-bar"
+                                    style="height: 20%"
+                                ></div>
+                                <div
+                                    class="chart-bar"
+                                    style="height: 40%"
+                                ></div>
+                                <div
+                                    class="chart-bar"
+                                    style="height: 35%"
+                                ></div>
+                                <div
+                                    class="chart-bar"
+                                    style="height: 55%"
+                                ></div>
+                                <div
+                                    class="chart-bar"
+                                    style="height: 50%"
+                                ></div>
+                                <div
+                                    class="chart-bar"
+                                    style="height: 70%"
+                                ></div>
+                                <div
+                                    class="chart-bar"
+                                    style="height: 65%"
+                                ></div>
+                                <div
+                                    class="chart-bar"
+                                    style="height: 85%"
+                                ></div>
+                                <div
+                                    class="chart-bar"
+                                    style="height: 80%"
+                                ></div>
+                                <div
+                                    class="chart-bar"
+                                    style="height: 95%"
+                                ></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hero-float-card card-1">
+                        <div class="float-card-number"></div>
+                        <div class="float-card-label">Made with love</div>
+                    </div>
+                    <div class="hero-float-card card-2">
+                        <div class="float-card-number">4.8★</div>
+                        <div class="float-card-label">Avg. Rating</div>
+                    </div>
+                    <div class="hero-float-card card-3">
+                        <div class="float-card-number">+62%</div>
+                        <div class="float-card-label">MoM Growth</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <script>
+            (function(){
+                var playBtn = document.getElementById('playBtn');
+                var catVideo = document.getElementById('catVideo');
+                var placeholder = document.getElementById('videoPlayer');
+                if(!playBtn || !catVideo || !placeholder) return;
+
+                function playLocalVideo(){
+                    var srcEl = catVideo.querySelector('source');
+                    if(srcEl && srcEl.getAttribute('src') !== 'whiskers.mp4'){
+                        srcEl.setAttribute('src','whiskers.mp4');
+                        catVideo.load();
+                    }
+                    placeholder.style.display = 'none';
+                    catVideo.style.display = 'block';
+                    catVideo.controls = true;
+                    // try to unmute so sound plays; user gesture should allow it
+                    catVideo.muted = false;
+                    var p = catVideo.play();
+                    if(p && p.catch){
+                        p.catch(function(e){
+                            console.warn('Video playback failed:', e);
+                        });
+                    }
+                }
+
+                playBtn.addEventListener('click', playLocalVideo);
+                // also allow clicking the whole placeholder
+                placeholder.addEventListener('click', function(e){
+                    if(e.target === playBtn || playBtn.contains(e.target)) return;
+                    playLocalVideo();
+                });
+            })();
+        </script>
+
+        <div
+            class="marquee-container"
+            style="
+                background: white;
+                border-top: 1px solid rgba(0, 0, 0, 0.04);
+                border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+            "
+        >
+            <div class="marquee-track">
+                <div class="marquee-item"><span>🐕</span> Dogs</div>
+                <div class="marquee-item"><span>🐈</span> Cats</div>
+                <div class="marquee-item"><span>🦜</span> Birds</div>
+                <div class="marquee-item"><span>🐹</span> Small Pets</div>
+                <div class="marquee-item"><span>🐠</span> Fish</div>
+                <div class="marquee-item"><span>🥫</span> Premium Food</div>
+                <div class="marquee-item"><span>🧸</span> Toys</div>
+                <div class="marquee-item"><span>️</span> Grooming</div>
+                <div class="marquee-item"><span>💊</span> Health</div>
+                <div class="marquee-item"><span></span> Accessories</div>
+                <div class="marquee-item"><span></span> Dogs</div>
+                <div class="marquee-item"><span>🐈</span> Cats</div>
+                <div class="marquee-item"><span>🦜</span> Birds</div>
+                <div class="marquee-item"><span>🐹</span> Small Pets</div>
+                <div class="marquee-item"><span>🐠</span> Fish</div>
+                <div class="marquee-item"><span>🥫</span> Premium Food</div>
+                <div class="marquee-item"><span>🧸</span> Toys</div>
+                <div class="marquee-item"><span>️</span> Grooming</div>
+                <div class="marquee-item"><span></span> Health</div>
+                <div class="marquee-item"><span>🏠</span> Accessories</div>
+            </div>
+        </div>
+
+        <section class="section overview" id="overview">
+            <div class="section-inner">
+                <div class="section-label">Project Overview</div>
+                <div class="overview-grid">
+                    <div class="reveal">
+                        <h2 class="section-title">
+                            A Store Born from Love for Pets
+                        </h2>
+                        <p class="section-desc">
+                            Thriving Paws started as a passion project by two
+                            pet enthusiasts who noticed that finding quality pet
+                            essentials online was harder than it should be.
+                            Their goal wasn't to compete with the giants — it
+                            was to create a curated, trustworthy little corner
+                            of the internet for pet parents who care deeply
+                            about their furry friends.
+                        </p>
+                        <p class="section-desc" style="margin-top: 1rem">
+                            We helped them turn this vision into reality with a
+                            clean, warm Shopify store that feels personal and
+                            genuine — just like the people behind it.
+                        </p>
+                        <div class="overview-stats">
+                            <div class="overview-stat reveal reveal-delay-1">
+                                <div class="stat-number">127</div>
+                                <div class="stat-label">Products Curated</div>
+                            </div>
+                            <div class="overview-stat reveal reveal-delay-2">
+                                <div class="stat-number">18</div>
+                                <div class="stat-label">Quality Brands</div>
+                            </div>
+                            <div class="overview-stat reveal reveal-delay-3">
+                                <div class="stat-number">800+</div>
+                                <div class="stat-label">Happy Customers</div>
+                            </div>
+                            <div class="overview-stat reveal reveal-delay-4">
+                                <div class="stat-number">4.8★</div>
+                                <div class="stat-label">Avg. Rating</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="overview-visual reveal reveal-delay-2">
+                        <div class="overview-image-card">
+                            <div class="paw-big"></div>
+                            <h3>Thriving Paws</h3>
+                            <p>Premium Pet Essentials</p>
+                        </div>
+                        <div class="overview-badge top-right">
+                            <div class="badge-icon green">✅</div>
+                            <div class="badge-text">
+                                <div class="num">Verified Store</div>
+                                <div class="lbl">Trusted by pet parents</div>
+                            </div>
+                        </div>
+                        <div class="overview-badge bottom-left">
+                            <div class="badge-icon orange">🎯</div>
+                            <div class="badge-text">
+                                <div class="num">100% Curated</div>
+                                <div class="lbl">Every product tested</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section challenge" id="challenge">
+            <div class="section-inner">
+                <div style="text-align: center" class="reveal">
+                    <div class="section-label" style="justify-content: center">
+                        The Challenge
+                    </div>
+                    <h2 class="section-title">What We Were Up Against</h2>
+                    <p class="section-desc" style="margin: 0 auto">
+                        As a small startup entering a crowded market, Thriving
+                        Paws faced real challenges — and we tackled each one
+                        thoughtfully.
+                    </p>
+                </div>
+                <div class="challenge-cards">
+                    <div class="challenge-card reveal reveal-delay-1">
+                        <div class="challenge-icon"></div>
+                        <h3>Competing with Big Players</h3>
+                        <p>
+                            Chewy, Amazon, and PetSmart dominate the space. We
+                            focused on what they can't offer: a personal touch,
+                            curated selection, and a brand that feels like a
+                            friend who really knows pets.
+                        </p>
+                    </div>
+                    <div class="challenge-card reveal reveal-delay-2">
+                        <div class="challenge-icon">🤝</div>
+                        <h3>Building Trust from Zero</h3>
+                        <p>
+                            No brand history meant we had to earn trust fast. We
+                            emphasized real product reviews, transparent
+                            sourcing, and a genuine "we're pet parents too"
+                            voice throughout the store.
+                        </p>
+                    </div>
+                    <div class="challenge-card reveal reveal-delay-3">
+                        <div class="challenge-icon">📱</div>
+                        <h3>Mobile-First Reality</h3>
+                        <p>
+                            Most pet parents shop on their phones during walks
+                            or lunch breaks. We made sure every interaction —
+                            from browsing to checkout — felt effortless on
+                            mobile.
+                        </p>
+                    </div>
+                    <div class="challenge-card reveal reveal-delay-1">
+                        <div class="challenge-icon">📦</div>
+                        <h3>Organizing a Growing Catalog</h3>
+                        <p>
+                            Even with a focused selection, organizing products
+                            so customers find what they need quickly required
+                            smart categories, filters, and search functionality.
+                        </p>
+                    </div>
+                    <div class="challenge-card reveal reveal-delay-2">
+                        <div class="challenge-icon">🔄</div>
+                        <h3>Encouraging Repeat Visits</h3>
+                        <p>
+                            Pet food and supplies are recurring needs. We set up
+                            simple subscription options and a loyalty program to
+                            make reordering as easy as possible.
+                        </p>
+                    </div>
+                    <div class="challenge-card reveal reveal-delay-3">
+                        <div class="challenge-icon">💰</div>
+                        <h3>Startup Budget Constraints</h3>
+                        <p>
+                            Every dollar counted. We prioritized high-impact
+                            features and used Shopify's native tools wherever
+                            possible to keep costs lean while delivering a
+                            premium feel.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section solution" id="solution">
+            <div class="section-inner">
+                <div style="text-align: center" class="reveal">
+                    <div class="section-label" style="justify-content: center">
+                        Our Approach
+                    </div>
+                    <h2 class="section-title">Simple, Thoughtful, Effective</h2>
+                    <p class="section-desc" style="margin: 0 auto">
+                        We didn't overcomplicate things. Every decision was
+                        guided by one question: does this help pet parents find
+                        what they need and feel good about buying it?
+                    </p>
+                </div>
+                <div class="solution-features">
+                    <div class="solution-feature reveal reveal-delay-1">
+                        <div class="feature-number">01</div>
+                        <h3>Warm, Inviting Design</h3>
+                        <p>
+                            A custom Shopify theme with earthy greens, soft
+                            textures, and playful paw print details. The design
+                            feels like walking into a cozy pet boutique — not a
+                            faceless warehouse.
+                        </p>
+                    </div>
+                    <div class="solution-feature reveal reveal-delay-2">
+                        <div class="feature-number">02</div>
+                        <h3>Smart, Simple Navigation</h3>
+                        <p>
+                            Shop by pet type (dog, cat, bird, small pets), by
+                            product category, or by brand. Clean menus and
+                            filters that actually make sense to pet parents.
+                        </p>
+                    </div>
+                    <div class="solution-feature reveal reveal-delay-3">
+                        <div class="feature-number">03</div>
+                        <h3>Subscription Made Easy</h3>
+                        <p>
+                            Set up recurring orders for food and essentials with
+                            a few clicks. Customers save 10% on subscriptions
+                            and never worry about running out.
+                        </p>
+                    </div>
+                    <div class="solution-feature reveal reveal-delay-4">
+                        <div class="feature-number">04</div>
+                        <h3>Fast & Reliable</h3>
+                        <p>
+                            Optimized images, clean code, and smart loading
+                            strategies keep the store fast. No pet parent should
+                            wait more than a couple seconds for a page to load.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section video-section" id="video">
+            <div class="section-inner">
+                <div style="text-align: center" class="reveal">
+                    <div class="section-label" style="justify-content: center">
+                        Meet Our Mascot
+                    </div>
+                    <h2 class="section-title">
+                        The Real Star of Thriving Paws
+                    </h2>
+                    <p class="section-desc" style="margin: 0 auto">
+                        Every great pet store needs a furry ambassador. Here's
+                        the adorable face behind the brand — captured through
+                        the peephole, because that's how curious cats say hello.
+                    </p>
+                </div>
+                <div class="video-container reveal">
+                    <div class="video-wrapper">
+                        <div class="video-placeholder" id="videoPlayer">
+                            <div class="play-button" id="playBtn">
+                                <svg viewBox="0 0 24 24">
+                                    <polygon
+                                        points="5,3 19,12 5,21"
+                                        fill="white"
+                                    />
+                                </svg>
+                            </div>
+                            <div class="video-label">
+                                <strong>🐱 Peekaboo!</strong> — Watch our kitten
+                                investigate the camera
+                            </div>
+                        </div>
+                        <video
+                            id="catVideo"
+                            style="
+                                display: none;
+                                width: 100%;
+                                height: 100%;
+                                object-fit: cover;
+                            "
+                            loop
+                            muted
+                            playsinline
+                        >
+                            <source
+                                src="https://cdn.pixabay.com/video/2024/02/09/198897-911188206_large.mp4"
+                                type="video/mp4"
+                            />
+                        </video>
+                    </div>
+                    <div class="video-float-1">
+                        <div class="float-card-number">😻</div>
+                        <div class="float-card-label">
+                            Chief Cuteness Officer
+                        </div>
+                    </div>
+                    <div class="video-float-2">
+                        <div class="float-card-number"></div>
+                        <div class="float-card-label">Star of the show</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section features-grid">
+            <div class="section-inner">
+                <div style="text-align: center" class="reveal">
+                    <div class="section-label" style="justify-content: center">
+                        Store Features
+                    </div>
+                    <h2 class="section-title">Built for Pet Parents</h2>
+                </div>
+                <div class="features-grid-inner">
+                    <div class="feature-item reveal reveal-delay-1">
+                        <div class="feature-item-icon">🐾</div>
+                        <div class="feature-item-title">Pet Profile Quiz</div>
+                        <div class="feature-item-desc">
+                            Get personalized product recommendations for your
+                            pet
+                        </div>
+                    </div>
+                    <div class="feature-item reveal reveal-delay-2">
+                        <div class="feature-item-icon">⚡</div>
+                        <div class="feature-item-title">Quick Checkout</div>
+                        <div class="feature-item-desc">
+                            Shop Pay, Apple Pay, and Google Pay for fast
+                            purchases
+                        </div>
+                    </div>
+                    <div class="feature-item reveal reveal-delay-3">
+                        <div class="feature-item-icon"></div>
+                        <div class="feature-item-title">Loyalty Points</div>
+                        <div class="feature-item-desc">
+                            Earn points on every purchase toward future
+                            discounts
+                        </div>
+                    </div>
+                    <div class="feature-item reveal reveal-delay-4">
+                        <div class="feature-item-icon">📸</div>
+                        <div class="feature-item-title">Photo Reviews</div>
+                        <div class="feature-item-desc">
+                            Real customers sharing photos of their pets loving
+                            the products
+                        </div>
+                    </div>
+                    <div class="feature-item reveal reveal-delay-1">
+                        <div class="feature-item-icon">🔍</div>
+                        <div class="feature-item-title">Smart Search</div>
+                        <div class="feature-item-desc">
+                            Find products quickly with intelligent search
+                            suggestions
+                        </div>
+                    </div>
+                    <div class="feature-item reveal reveal-delay-2">
+                        <div class="feature-item-icon">🔄</div>
+                        <div class="feature-item-title">Auto-Reorder</div>
+                        <div class="feature-item-desc">
+                            Subscribe and save on food, treats, and essentials
+                        </div>
+                    </div>
+                    <div class="feature-item reveal reveal-delay-3">
+                        <div class="feature-item-icon">💬</div>
+                        <div class="feature-item-title">Live Chat</div>
+                        <div class="feature-item-desc">
+                            Quick answers from real pet-loving support agents
+                        </div>
+                    </div>
+                    <div class="feature-item reveal reveal-delay-4">
+                        <div class="feature-item-icon">📧</div>
+                        <div class="feature-item-title">
+                            Pet Tips Newsletter
+                        </div>
+                        <div class="feature-item-desc">
+                            Weekly care tips, new arrivals, and exclusive offers
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section results" id="results">
+            <div class="section-inner">
+                <div style="text-align: center" class="reveal">
+                    <div class="section-label" style="justify-content: center">
+                        Early Results
+                    </div>
+                    <h2 class="section-title">
+                        Promising Start for a Young Store
+                    </h2>
+                    <p class="section-desc" style="margin: 0 auto">
+                        We're still in the early days, but the signs are
+                        encouraging. Here's how Thriving Paws has grown in its
+                        first few months.
+                    </p>
+                </div>
+                <div class="results-grid">
+                    <div class="result-card reveal reveal-delay-1">
+                        <div class="card-icon">📈</div>
+                        <div class="metric-value" data-target="62">0%</div>
+                        <div class="metric-change">↑ Month over month</div>
+                        <div class="metric-label">Revenue Growth</div>
+                    </div>
+                    <div class="result-card highlight reveal reveal-delay-2">
+                        <div class="card-icon">🛒</div>
+                        <div class="metric-value" data-target="3.8">0%</div>
+                        <div class="metric-change">↑ Above industry avg</div>
+                        <div class="metric-label">Conversion Rate</div>
+                    </div>
+                    <div class="result-card reveal reveal-delay-3">
+                        <div class="card-icon">🔄</div>
+                        <div class="metric-value" data-target="45">0%</div>
+                        <div class="metric-change">↑ Repeat purchase rate</div>
+                        <div class="metric-label">Returning Customers</div>
+                    </div>
+                    <div class="result-card reveal reveal-delay-1">
+                        <div class="card-icon">⚡</div>
+                        <div class="metric-value" data-target="1.8">0s</div>
+                        <div class="metric-change">↓ Lightning fast</div>
+                        <div class="metric-label">Avg. Load Time</div>
+                    </div>
+                    <div class="result-card reveal reveal-delay-2">
+                        <div class="card-icon">😊</div>
+                        <div class="metric-value" data-target="92">0%</div>
+                        <div class="metric-change">↑ Satisfaction score</div>
+                        <div class="metric-label">Customer Happiness</div>
+                    </div>
+                    <div class="result-card reveal reveal-delay-3">
+                        <div class="card-icon">👀</div>
+                        <div class="metric-value" data-target="2.5">0K</div>
+                        <div class="metric-change">
+                            ↑ Organic monthly visitors
+                        </div>
+                        <div class="metric-label">Monthly Traffic</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section timeline-section" id="timeline">
+            <div class="section-inner">
+                <div style="text-align: center" class="reveal">
+                    <div class="section-label" style="justify-content: center">
+                        How It Happened
+                    </div>
+                    <h2 class="section-title">8 Weeks from Idea to Launch</h2>
+                </div>
+                <div class="timeline">
+                    <div class="timeline-item reveal">
+                        <div class="timeline-phase">Phase 1 — Discovery</div>
+                        <div class="timeline-title">
+                            Understanding the Vision
+                        </div>
+                        <div class="timeline-desc">
+                            Spent time with the founders learning about their
+                            passion for pets, what products they'd personally
+                            recommend, and the feeling they wanted customers to
+                            have.
+                        </div>
+                        <span class="timeline-duration">Week 1-2</span>
+                    </div>
+                    <div class="timeline-item reveal">
+                        <div class="timeline-phase">Phase 2 — Design</div>
+                        <div class="timeline-title">
+                            Designing the Experience
+                        </div>
+                        <div class="timeline-desc">
+                            Created a warm, inviting design that feels personal.
+                            Multiple rounds of feedback ensured every detail
+                            matched the founders' vision.
+                        </div>
+                        <span class="timeline-duration">Week 3-4</span>
+                    </div>
+                    <div class="timeline-item reveal">
+                        <div class="timeline-phase">Phase 3 — Build</div>
+                        <div class="timeline-title">
+                            Building the Shopify Store
+                        </div>
+                        <div class="timeline-desc">
+                            Developed the store on Shopify, added the initial
+                            product catalog, set up payments and shipping, and
+                            configured all the essential apps.
+                        </div>
+                        <span class="timeline-duration">Week 5-6</span>
+                    </div>
+                    <div class="timeline-item reveal">
+                        <div class="timeline-phase">Phase 4 — Refine</div>
+                        <div class="timeline-title">Testing & Polishing</div>
+                        <div class="timeline-desc">
+                            Thorough testing across devices, speed optimization,
+                            and fine-tuning every interaction. The founders
+                            tested everything with their own pets nearby.
+                        </div>
+                        <span class="timeline-duration">Week 7</span>
+                    </div>
+                    <div class="timeline-item reveal">
+                        <div class="timeline-phase">Phase 5 — Launch 🎉</div>
+                        <div class="timeline-title">Going Live!</div>
+                        <div class="timeline-desc">
+                            Thriving Paws officially launched at
+                            thrivingpaws.store. Soft launch to friends and
+                            family first, then opening up to the wider pet
+                            community.
+                        </div>
+                        <span class="timeline-duration">Week 8</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section testimonial-section">
+            <div class="section-inner reveal">
+                <div class="testimonial-quote">
+                    "We always dreamed of having a little store for pet parents
+                    like us. The team understood that perfectly — they didn't
+                    just build a website, they built our dream. And our cat
+                    approves too, which is the highest praise possible."
+                </div>
+                <div class="testimonial-author">
+                    <div class="testimonial-avatar">🐱</div>
+                    <div class="testimonial-info">
+                        <div class="name">Sarah & Parker Mitchell</div>
+                        <div class="role">
+                            Founders, Thriving Paws (and parents of Whiskers the
+                            cat)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section tech-stack">
+            <div class="section-inner">
+                <div style="text-align: center" class="reveal">
+                    <div class="section-label" style="justify-content: center">
+                        Built With
+                    </div>
+                    <h2 class="section-title">Our Tech Stack</h2>
+                    <p class="section-desc" style="margin: 0 auto">
+                        We kept it lean and effective — using Shopify's powerful
+                        platform plus carefully chosen apps to deliver a great
+                        experience without unnecessary complexity.
+                    </p>
+                </div>
+                <div class="tech-grid reveal">
+                    <div class="tech-badge">🛒 Shopify</div>
+                    <div class="tech-badge">Custom Liquid Theme</div>
+                    <div class="tech-badge">Mobile-Optimized</div>
+                    <div class="tech-badge">🔄 Subscriptions App</div>
+                    <div class="tech-badge">⭐ Judge.me Reviews</div>
+                    <div class="tech-badge">📧 Klaviyo Email</div>
+                    <div class="tech-badge">📊 Google Analytics</div>
+                    <div class="tech-badge">🔍 SEO Optimized</div>
+                    <div class="tech-badge">💬 Shopify Inbox</div>
+                    <div class="tech-badge">💳 Shop Pay</div>
+                    <div class="tech-badge">🚚 ShipStation</div>
+                    <div class="tech-badge">Custom Branding</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section cta-section" id="cta">
+            <div class="section-inner">
+                <div class="cta-content reveal">
+                    <div
+                        class="section-label"
+                        style="
+                            justify-content: center;
+                            color: var(--paw-secondary);
+                        "
+                    >
+                        Have a Similar Vision?
+                    </div>
+                    <h2 class="cta-title font-playfair">
+                        Let's Build Something Special Together
+                    </h2>
+                    <p class="cta-desc">
+                        Whether it's a pet store or something completely
+                        different, we'd love to hear your story and help bring
+                        it to life.
+                    </p>
+                    <div class="cta-buttons">
+                        <a
+                            href="https://thrivingpaws.store"
+                            target="_blank"
+                            class="btn-white"
+                            >Visit Thriving Paws
+                            <svg
+                                width="14"
+                                height="14"
+                                viewBox="0 0 16 16"
+                                fill="none"
+                            >
+                                <path
+                                    d="M4 12L12 4M12 4H6M12 4v6"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                /></svg
+                        ></a>
+                        <a
+                            href="mailto:hello@thrivingpaws.store"
+                            class="btn-outline-white"
+                            >Get in Touch
+                            <svg
+                                width="14"
+                                height="14"
+                                viewBox="0 0 16 16"
+                                fill="none"
+                            >
+                                <path
+                                    d="M3 8h10M9 4l4 4-4 4"
+                                    stroke="currentColor"
+                                    stroke-width="2"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                /></svg
+                        ></a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer class="footer">
+            <div class="footer-inner">
+                <div class="footer-logo">
+                    <svg width="20" height="20" viewBox="0 0 40 40" fill="none">
+                        <ellipse cx="20" cy="28" rx="8" ry="6" fill="#95D5B2" />
+                        <circle cx="12" cy="16" r="4" fill="#95D5B2" />
+                        <circle cx="28" cy="16" r="4" fill="#95D5B2" />
+                        <circle cx="8" cy="24" r="3" fill="#95D5B2" />
+                        <circle cx="32" cy="24" r="3" fill="#95D5B2" />
+                    </svg>
+                    Thriving Paws — Case Study
+                </div>
+                <p>
+                    A small Shopify store with big dreams. Live at
+                    <span class="footer-domain">thrivingpaws.store</span>
+                </p>
+                <p style="margin-top: 0.5rem; opacity: 0.4">
+                    © 2024 Thriving Paws. Made with 🐾 and lots of love.
+                </p>
+            </div>
+        </footer>
+
+        <button
+            class="scroll-top"
+            id="scrollTop"
+            onclick="window.scrollTo({ top: 0, behavior: 'smooth' })"
+        >
+            ↑
+        </button>
+
+        <script>
+            var nav = document.getElementById("mainNav");
+            var progressBar = document.getElementById("progressBar");
+            var scrollTopBtn = document.getElementById("scrollTop");
+
+            window.addEventListener("scroll", function () {
+                var scrollY = window.scrollY;
+                var docHeight =
+                    document.documentElement.scrollHeight - window.innerHeight;
+                var scrollPercent = (scrollY / docHeight) * 100;
+
+                if (scrollY > 50) {
+                    nav.classList.add("scrolled");
+                } else {
+                    nav.classList.remove("scrolled");
+                }
+
+                progressBar.style.width = scrollPercent + "%";
+
+                if (scrollY > 400) {
+                    scrollTopBtn.classList.add("visible");
+                } else {
+                    scrollTopBtn.classList.remove("visible");
+                }
+            });
+
+            var revealElements = document.querySelectorAll(".reveal");
+            var revealObserver = new IntersectionObserver(
+                function (entries) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add("active");
+                        }
+                    });
+                },
+                { threshold: 0.08, rootMargin: "0px 0px -40px 0px" },
+            );
+
+            revealElements.forEach(function (el) {
+                revealObserver.observe(el);
+            });
+
+            var metricValues = document.querySelectorAll(".metric-value");
+            var counterObserver = new IntersectionObserver(
+                function (entries) {
+                    entries.forEach(function (entry) {
+                        if (entry.isIntersecting) {
+                            var el = entry.target;
+                            var target = parseFloat(el.dataset.target);
+                            var suffix = el.textContent.replace(/[0-9.]/g, "");
+                            var current = 0;
+                            var increment = target / 50;
+                            var isDecimal = target % 1 !== 0;
+
+                            var timer = setInterval(function () {
+                                current += increment;
+                                if (current >= target) {
+                                    current = target;
+                                    clearInterval(timer);
+                                }
+                                if (isDecimal) {
+                                    el.textContent =
+                                        current.toFixed(1) + suffix;
+                                } else {
+                                    el.textContent =
+                                        Math.round(current) + suffix;
+                                }
+                            }, 30);
+
+                            counterObserver.unobserve(el);
+                        }
+                    });
+                },
+                { threshold: 0.3 },
+            );
+
+            metricValues.forEach(function (el) {
+                counterObserver.observe(el);
+            });
+
+            document
+                .querySelectorAll('a[href^="#"]')
+                .forEach(function (anchor) {
+                    anchor.addEventListener("click", function (e) {
+                        var href = this.getAttribute("href");
+                        if (href === "#") return;
+                        e.preventDefault();
+                        var target = document.querySelector(href);
+                        if (target) {
+                            target.scrollIntoView({
+                                behavior: "smooth",
+                                block: "start",
+                            });
+                        }
+                    });
+                });
+
+            var videoPlayer = document.getElementById("videoPlayer");
+            var catVideo = document.getElementById("catVideo");
+            var playBtn = document.getElementById("playBtn");
+
+            function showAndPlayLocal() {
+                try {
+                    // set robust source (support either <source> or direct src)
+                    var srcEl = catVideo.querySelector('source');
+                    if (srcEl) {
+                        if (srcEl.getAttribute('src') !== 'whiskers.mp4') {
+                            srcEl.setAttribute('src', 'whiskers.mp4');
+                        }
+                    } else {
+                        if (catVideo.getAttribute('src') !== 'whiskers.mp4') {
+                            catVideo.setAttribute('src', 'whiskers.mp4');
+                        }
+                    }
+                    // remove muted attribute so user gesture can enable sound
+                    catVideo.removeAttribute('muted');
+                    catVideo.muted = false;
+                    // ensure placeholder hidden and video visible
+                    if (videoPlayer) videoPlayer.style.display = 'none';
+                    catVideo.style.display = 'block';
+                    catVideo.controls = true;
+                    catVideo.load();
+                    var p = catVideo.play();
+                    if (p && p.catch) p.catch(function (err) {
+                        console.warn('play() rejected:', err);
+                    });
+                } catch (err) {
+                    console.error('Error playing video:', err);
+                }
+            }
+
+            if (playBtn) {
+                playBtn.addEventListener('click', function (e) {
+                    e.stopPropagation();
+                    showAndPlayLocal();
+                });
+            }
+
+            if (videoPlayer) {
+                videoPlayer.addEventListener('click', function () {
+                    showAndPlayLocal();
+                });
+            }
+
+            if (catVideo) {
+                catVideo.addEventListener('click', function () {
+                    if (catVideo.paused) catVideo.play();
+                    else catVideo.pause();
+                });
+            }
+
+            if (
+                typeof gsap !== "undefined" &&
+                typeof ScrollTrigger !== "undefined"
+            ) {
+                gsap.registerPlugin(ScrollTrigger);
+
+                gsap.from(".hero-text > *", {
+                    y: 50,
+                    opacity: 0,
+                    duration: 0.9,
+                    stagger: 0.12,
+                    ease: "power3.out",
+                    delay: 0.2,
+                });
+
+                gsap.from(".hero-visual", {
+                    x: 60,
+                    opacity: 0,
+                    duration: 1,
+                    ease: "power3.out",
+                    delay: 0.4,
+                });
+
+                gsap.from(".hero-shape-1", {
+                    scale: 0.5,
+                    opacity: 0,
+                    duration: 2,
+                    ease: "power2.out",
+                    delay: 0.3,
+                });
+
+                gsap.from(".hero-shape-2", {
+                    scale: 0.3,
+                    opacity: 0,
+                    duration: 2.5,
+                    ease: "power2.out",
+                    delay: 0.5,
+                });
+
+                gsap.to(".hero-shape-1", {
+                    y: -30,
+                    duration: 8,
+                    repeat: -1,
+                    yoyo: true,
+                    ease: "sine.inOut",
+                });
+
+                gsap.to(".hero-shape-3", {
+                    y: 40,
+                    x: 20,
+                    duration: 6,
+                    repeat: -1,
+                    yoyo: true,
+                    ease: "sine.inOut",
+                });
+
+                gsap.from(".marquee-track", {
+                    x: 100,
+                    opacity: 0,
+                    duration: 1,
+                    delay: 0.8,
+                });
+
+                ScrollTrigger.create({
+                    trigger: ".overview-grid",
+                    start: "top 80%",
+                    onEnter: function () {
+                        gsap.from(".overview-image-card", {
+                            scale: 0.9,
+                            opacity: 0,
+                            duration: 0.8,
+                            ease: "power3.out",
+                        });
+                    },
+                });
+
+                gsap.utils
+                    .toArray(".challenge-card")
+                    .forEach(function (card, i) {
+                        gsap.from(card, {
+                            scrollTrigger: {
+                                trigger: card,
+                                start: "top 85%",
+                            },
+                            y: 40,
+                            opacity: 0,
+                            duration: 0.6,
+                            delay: i * 0.08,
+                            ease: "power3.out",
+                        });
+                    });
+
+                gsap.utils.toArray(".result-card").forEach(function (card, i) {
+                    gsap.from(card, {
+                        scrollTrigger: {
+                            trigger: card,
+                            start: "top 85%",
+                        },
+                        y: 30,
+                        opacity: 0,
+                        scale: 0.95,
+                        duration: 0.5,
+                        delay: i * 0.08,
+                        ease: "power3.out",
+                    });
+                });
+
+                ScrollTrigger.create({
+                    trigger: ".video-wrapper",
+                    start: "top 80%",
+                    onEnter: function () {
+                        gsap.from(".video-wrapper", {
+                            scale: 0.92,
+                            opacity: 0,
+                            duration: 0.8,
+                            ease: "power3.out",
+                        });
+                        gsap.from(".video-float-1", {
+                            x: 30,
+                            opacity: 0,
+                            duration: 0.6,
+                            delay: 0.3,
+                            ease: "power3.out",
+                        });
+                        gsap.from(".video-float-2", {
+                            x: -30,
+                            opacity: 0,
+                            duration: 0.6,
+                            delay: 0.5,
+                            ease: "power3.out",
+                        });
+                    },
+                });
+
+                gsap.utils.toArray(".tech-badge").forEach(function (badge, i) {
+                    gsap.from(badge, {
+                        scrollTrigger: {
+                            trigger: badge,
+                            start: "top 90%",
+                        },
+                        y: 15,
+                        opacity: 0,
+                        duration: 0.4,
+                        delay: i * 0.04,
+                        ease: "power2.out",
+                    });
+                });
+            }
+
+            var chartBars = document.querySelectorAll(".chart-bar");
+            setInterval(function () {
+                chartBars.forEach(function (bar) {
+                    var newHeight = Math.floor(Math.random() * 70) + 20;
+                    bar.style.height = newHeight + "%";
+                });
+            }, 3000);
+        </script>
+    </body>
+</html>
