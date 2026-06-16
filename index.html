@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -498,7 +498,7 @@ Error generating stack: `+i.message+`
         var cards=document.querySelectorAll('article.project-card');
         var cardsToProcess=[
           {labels:['meridian arts','web&mobile'],videoFile:'arts.mp4',url:'meridian-arts-casestudy.html'},
-          {labels:['vertex','shopping'],videoFile:'arky.mp4',url:'Vertex/Case_Study/index.html'},
+          {labels:['vertex','shopping'],videoFile:'arky.mp4',url:'vertex.html'},
           {labels:['thriving paws','shopify'],videoFile:'love.mp4',url:'striving-paws.html'}
         ];
         cardsToProcess.forEach(function(config){
@@ -682,7 +682,7 @@ document.addEventListener('DOMContentLoaded', function(){
         card.addEventListener('click', function(e){
           var a = e.target.closest('a');
           if(a) return; // let internal links work
-          window.location.href = 'LifeWorks-Rizal/index.html';
+          window.location.href = 'rizal.html';
         });
       }
     }catch(err){console.warn(err)}
