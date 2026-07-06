@@ -7,8 +7,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-    <script type="module" crossorigin src="./index-dg7b3EnH.js"></script>
-    <link rel="stylesheet" crossorigin href="./index-aAfRe-Xf.css">
+    <script type="module" crossorigin src="./index-CJwQwmbq.js"></script>
+    <link rel="stylesheet" crossorigin href="./index-DshVfaN6.css">
     <style>
       #backBtn, #themeToggleBtn {
         position: fixed;
@@ -175,11 +175,12 @@
       section#hero > canvas { display:none !important; }
       .aurora-scene * { box-sizing:border-box; }
       .aurora-panel { position:relative; width:100%; height:100%; inset:0; }
+      .aurora-bg { position:absolute; inset:0; z-index:0; pointer-events:none; background-repeat:no-repeat; background-position:0 0; }
       .aurora-grid { position:absolute; inset:0; display:grid; transform-style:preserve-3d; perspective:700px; perspective-origin:50% -20%; z-index:1; pointer-events:auto; }
       .aurora-cell { position:relative; transform-style:preserve-3d; }
       .aurora-box { position:absolute; inset:0; transform-style:preserve-3d; transform:translateZ(0px); transition:transform 2.4s cubic-bezier(0.16,1,0.3,1); }
       .aurora-cell.pressed .aurora-box { transform:translateZ(-50px); transition:transform 0.7s ease-in; }
-      .aurora-face { position:absolute; background:#222; }
+      .aurora-face { position:absolute; background:#000000; }
       .aurora-face.top    { inset:0; }
       .aurora-face.bottom { inset:0; transform:translateZ(-50px); }
       .aurora-face.front  { left:0;right:0;height:50px;top:100%;transform-origin:top center;transform:rotateX(-90deg); }
@@ -188,6 +189,7 @@
       .aurora-face.right  { top:0;bottom:0;width:50px;left:100%;transform-origin:left center;transform:rotateY(90deg); }
       /* keep overlay canvas on top */
       .aurora-overlay { position:absolute; inset:0; width:100%; height:100%; pointer-events:none; z-index:10; }
+      section#hero video { display:none !important; visibility:hidden !important; width:0 !important; height:0 !important; max-width:0 !important; max-height:0 !important; }
     </style>
   </head>
   <body>
@@ -253,6 +255,7 @@
           if (overlay) {
             overlay.remove();
           }
+          hero.querySelectorAll('video').forEach((video) => video.remove());
         }
         document.addEventListener('DOMContentLoaded', removeHeroGrid);
         setTimeout(removeHeroGrid, 1000);
@@ -274,6 +277,12 @@
         }
 
         function attachAurora(hero) {
+          if (hero.dataset.auroraAttached) return;
+          hero.dataset.auroraAttached = '1';
+
+          const COLOR_INTERVAL = 80;
+          const MATTE = '#000000';
+
           // create scene container and insert as first child so it's behind content
           const scene = document.createElement('div');
           scene.className = 'aurora-scene';
@@ -292,19 +301,23 @@
           panel.style.inset = '0';
           panel.style.zIndex = '0';
 
+          const auroraBg = document.createElement('div');
+          auroraBg.className = 'aurora-bg';
+
           const grid = document.createElement('div');
           grid.className = 'aurora-grid';
 
+          panel.appendChild(auroraBg);
           panel.appendChild(grid);
           scene.appendChild(panel);
 
           // Configuration: 8x4 grid with larger cube coverage and low render cost
           const cols = 8, rows = 4;
-          const HOLD_MS = 900;
           grid.style.gridTemplateColumns = `repeat(${cols},1fr)`;
           grid.style.gridTemplateRows    = `repeat(${rows},1fr)`;
 
           const cellEls = [];
+          const cellMeta = [];
           for(let i = 0; i < cols * rows; i++){
             const cell = document.createElement('div');
             cell.className = 'aurora-cell';
@@ -316,10 +329,19 @@
             </div>`;
             grid.appendChild(cell);
             cellEls.push(cell);
+            cellMeta.push({
+              col: i % cols,
+              row: Math.floor(i / cols),
+              top: cell.querySelector('.aurora-face.top'),
+              back: cell.querySelector('.aurora-face.back'),
+              left: cell.querySelector('.aurora-face.left'),
+              right: cell.querySelector('.aurora-face.right'),
+              inTrap: false,
+            });
           }
 
-          const offscreen   = document.createElement('canvas');
-          let offCtx, W, H;
+          const offscreen = document.createElement('canvas');
+          let offCtx, W, H, currentHue = 0, lastColorUpdate = 0;
 
           function getTrap() {
             const trapF = [[0.12,0.10],[1.00,0.06],[1.00,0.88],[0.28,0.88]];
@@ -343,10 +365,18 @@
               || pointInTrap(x0+2,y1-2) || pointInTrap(x1-2,y1-2);
           }
 
+          function recomputeTrapMembership() {
+            const cW = W / cols, cH = H / rows;
+            cellMeta.forEach((meta) => {
+              meta.inTrap = cellTouchesTrap(meta.col, meta.row, cW, cH);
+            });
+          }
+
           function drawAurora(t) {
             offCtx.clearRect(0,0,W,H);
             const p = t * 0.00035;
             const h1 = (p * 40) % 360;
+            currentHue = h1;
             const poly = getTrap();
             offCtx.save();
             offCtx.beginPath();
@@ -364,56 +394,73 @@
             offCtx.restore();
           }
 
-          function applyColors() {
-            const url = offscreen.toDataURL();
-            const cW = W / cols, cH = H / rows;
-            cellEls.forEach((cell,i)=>{
-              const col=i%cols, row=Math.floor(i/cols);
-              const cx=Math.round((col+0.5)*cW), cy=Math.round((row+0.5)*cH);
-              const top=cell.querySelector('.aurora-face.top');
-              const bottom=cell.querySelector('.aurora-face.bottom');
-              const back=cell.querySelector('.aurora-face.back');
-              const left=cell.querySelector('.aurora-face.left');
-              const right=cell.querySelector('.aurora-face.right');
-              if(cellTouchesTrap(col,row,cW,cH)){
-                const d=offCtx.getImageData(cx,cy,1,1).data;
-                const r=d[0],g=d[1],b=d[2];
-                const dk=f=>`rgb(${Math.round(r*f)},${Math.round(g*f)},${Math.round(b*f)})`;
-                top.style.background = `url(${url}) -${Math.round(col*cW)}px -${Math.round(row*cH)}px / ${W}px ${H}px no-repeat, #222`;
-                if (bottom) bottom.style.background = dk(0.10);
-                back.style.background   = dk(0.22);
-                left.style.background   = dk(0.30);
-                right.style.background  = dk(0.30);
-              } else {
-                top.style.background    = '#222';
-                if (bottom) bottom.style.background = '#1a1a1a';
-                back.style.background   = '#161616';
-                left.style.background   = '#1c1c1c';
-                right.style.background  = '#1c1c1c';
+          function applyMatteFaces() {
+            cellMeta.forEach((meta) => {
+              meta.back.style.background = MATTE;
+              meta.left.style.background = MATTE;
+              meta.right.style.background = MATTE;
+              if (!meta.inTrap) {
+                meta.top.style.backgroundImage = '';
+                meta.top.style.background = MATTE;
               }
             });
+          }
+
+          function applyColors(force) {
+            if (!offCtx || !W || !H) return;
+            const url = offscreen.toDataURL('image/jpeg', 0.82);
+            auroraBg.style.backgroundImage = `url(${url})`;
+            auroraBg.style.backgroundSize = `${W}px ${H}px`;
+            const cW = W / cols, cH = H / rows;
+            cellMeta.forEach((meta) => {
+              const { top, col, row, inTrap } = meta;
+              if (inTrap) {
+                top.style.backgroundImage = `url(${url})`;
+                top.style.backgroundSize = `${W}px ${H}px`;
+                top.style.backgroundPosition = `-${Math.round(col * cW)}px -${Math.round(row * cH)}px`;
+                top.style.backgroundRepeat = 'no-repeat';
+                top.style.backgroundColor = MATTE;
+              }
+            });
+            applyMatteFaces();
           }
 
           let auroraActive = true;
           let dropTimer = null;
 
           function resize() {
-            W = panel.offsetWidth; H = panel.offsetHeight;
-            offscreen.width=W; offscreen.height=H;
+            W = panel.offsetWidth;
+            H = panel.offsetHeight;
+            if (W <= 0 || H <= 0) return false;
+            offscreen.width = W;
+            offscreen.height = H;
+            recomputeTrapMembership();
+            applyMatteFaces();
+            return true;
+          }
+
+          function paintAurora(t, force) {
+            if (!offCtx || !W || !H) return;
+            drawAurora(t);
+            applyColors(force);
           }
 
           function loop(t) {
             if (auroraActive) {
-              drawAurora(t);
-              applyColors();
+              if (!W || !H) resize();
+              if (auroraActive && t - lastColorUpdate >= COLOR_INTERVAL) {
+                lastColorUpdate = t;
+                paintAurora(t, false);
+              }
             }
             requestAnimationFrame(loop);
           }
 
           function activateAurora() {
-            if (auroraActive) return;
             auroraActive = true;
             scene.style.display = '';
+            lastColorUpdate = 0;
+            if (resize()) paintAurora(performance.now(), true);
             startRandomDrops();
           }
 
@@ -428,22 +475,31 @@
             cellEls.forEach(cell => cell.classList.remove('pressed'));
           }
 
-          resize();
-          offCtx = offscreen.getContext('2d');
-
+          offCtx = offscreen.getContext('2d', { willReadFrequently: true });
+          lastColorUpdate = 0;
+          if (resize()) paintAurora(performance.now(), true);
           requestAnimationFrame(loop);
-          window.addEventListener('resize', resize);
+          window.addEventListener('resize', function() {
+            if (resize()) paintAurora(performance.now(), true);
+          });
+          [100, 400, 1000].forEach(function(delay) {
+            setTimeout(function() {
+              if (resize()) paintAurora(performance.now(), true);
+            }, delay);
+          });
 
+          let hasBeenVisible = false;
           const observer = new IntersectionObserver(entries => {
             const entry = entries[0];
             if (entry && entry.isIntersecting) {
+              hasBeenVisible = true;
               activateAurora();
-            } else {
+            } else if (hasBeenVisible) {
               deactivateAurora();
             }
           }, {
             root: null,
-            threshold: 0.15
+            threshold: 0.05
           });
 
           observer.observe(hero);
@@ -493,5 +549,74 @@
         else document.addEventListener('DOMContentLoaded', startAurora);
       })();
     </script>
-  </body>
-</html>
+<script>
+  (function() {
+    function removeThirdJourneyCard() {
+      const cards = document.querySelectorAll('section#journey .scroll-snap-start');
+      if (cards.length >= 3) {
+        cards[2].remove();
+        return true;
+      }
+      return false;
+    }
+
+    function injectIterationImage(card, src, alt) {
+      if (!card || card.querySelector('img.iteration-card-image')) return false;
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = alt;
+      img.className = 'iteration-card-image';
+      img.style.display = 'block';
+      img.style.width = '100%';
+      img.style.maxWidth = '260px';
+      img.style.margin = '16px auto 0';
+      img.style.borderRadius = '18px';
+      const insertBefore = card.querySelector('.mt-4');
+      const wrapper = card.querySelector('.text-center');
+      if (wrapper) {
+        if (insertBefore) wrapper.insertBefore(img, insertBefore);
+        else wrapper.appendChild(img);
+        return true;
+      }
+      return false;
+    }
+
+    function removeCardLabel(card) {
+      if (!card) return false;
+      const label = card.querySelector('.text-sm');
+      if (label) {
+        label.remove();
+        return true;
+      }
+      return false;
+    }
+
+    function processJourneyCards() {
+      const cards = document.querySelectorAll('section#journey .scroll-snap-start');
+      let changed = false;
+      if (cards.length >= 3) {
+        cards[2].remove();
+        changed = true;
+      }
+      if (cards.length >= 1) {
+        changed = removeCardLabel(cards[0]) || changed;
+        changed = injectIterationImage(cards[0], 'iterationuno.png', 'Iteration 1 preview') || changed;
+      }
+      if (cards.length >= 2) {
+        changed = removeCardLabel(cards[1]) || changed;
+        changed = injectIterationImage(cards[1], 'iterationdos.png', 'Iteration 2 preview') || changed;
+      }
+      return changed;
+    }
+
+    const observer = new MutationObserver(function() {
+      if (processJourneyCards()) {
+        observer.disconnect();
+      }
+    });
+
+    observer.observe(document.body, { childList: true, subtree: true });
+    processJourneyCards();
+    setTimeout(() => observer.disconnect(), 10000);
+  })();
+</script>

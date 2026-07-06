@@ -3,7 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Meridian Arts — Case Study</title>
+<title>Meridian Arts Case Study — UI/UX Design & Exhibition Space</title>
+<meta name="description" content="Read the Meridian Arts case study. A comprehensive UI/UX design exploration focusing on exhibition spaces, artist showcases, and digital galleries." />
+
+<!-- Open Graph / Social Media Preview -->
+<meta property="og:type" name="og:type" content="website" />
+<meta property="og:url" name="og:url" content="https://gabrielesuthasiri.github.io/Portfolio/meridian-arts-casestudy.html" />
+<meta property="og:title" name="og:title" content="Meridian Arts Case Study — UI/UX Design & Exhibition Space" />
+<meta property="og:description" name="og:description" content="Read the Meridian Arts case study. A comprehensive UI/UX design exploration focusing on exhibition spaces, artist showcases, and digital galleries." />
+<meta property="og:image" name="og:image" content="https://gabrielesuthasiri.github.io/Portfolio/gab.png" />
+<meta property="og:site_name" name="og:site_name" content="Gabriele Suthasiri Portfolio" />
+
+<!-- Twitter Card -->
+<meta name="twitter:card" property="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" property="twitter:title" content="Meridian Arts Case Study — UI/UX Design & Exhibition Space" />
+<meta name="twitter:description" property="twitter:description" content="Read the Meridian Arts case study. A comprehensive UI/UX design exploration focusing on exhibition spaces, artist showcases, and digital galleries." />
+<meta name="twitter:image" property="twitter:image" content="https://gabrielesuthasiri.github.io/Portfolio/gab.png" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <style>
@@ -709,6 +724,14 @@
     background: #f5f2ec;
     overflow: hidden;
     position: relative;
+  }
+
+  .desktop-screen .desktop-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: center center;
+    display: block;
   }
 
   /* Simulated website inside frame */
@@ -1734,6 +1757,20 @@
   </div>
 
   <!-- Desktop mockup -->
+  <div class="desktop-showcase" id="desktop-showcase-1">
+    <div class="desktop-frame">
+      <div class="desktop-bar">
+        <div class="dot dot-red"></div>
+        <div class="dot dot-yellow"></div>
+        <div class="dot dot-green"></div>
+        <div class="desktop-url">meridianarts.org</div>
+      </div>
+      <div class="desktop-screen">
+        <img class="desktop-preview" src="front.png" alt="Meridian Arts desktop preview">
+      </div>
+    </div>
+  </div>
+
   <div class="desktop-showcase">
     <div class="desktop-frame">
       <div class="desktop-bar">
@@ -1743,63 +1780,21 @@
         <div class="desktop-url">meridianarts.org</div>
       </div>
       <div class="desktop-screen">
-        <!-- Simulated website -->
-        <div class="sim-nav">
-          <div class="sim-logo">
-            <div class="sim-logo-mark">MA</div>
-            MERIDIAN ARTS
-          </div>
-          <div class="sim-nav-links">
-            <span>Exhibitions</span>
-            <span>Events</span>
-            <span>Visit</span>
-            <span>About</span>
-          </div>
-          <div class="sim-btn">Book a visit</div>
-        </div>
-        <div class="sim-hero">
-          <div class="sim-hero-left">
-            <div class="sim-hero-tag">Where vision takes form</div>
-            <div class="sim-hero-h1"><em>Vision</em><br>takes form</div>
-            <p class="sim-hero-p">Discover world-class contemporary art, immersive experiences, and conversations that shape culture.</p>
-            <span class="sim-cta">Plan your visit →</span>
-          </div>
-          <div class="sim-hero-right">
-            <svg viewBox="0 0 350 200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" style="width:100%;height:100%">
-              <path d="M0,0 L350,0 L350,60 Q280,90 210,70 Q140,50 70,80 Q35,95 0,85 Z" fill="#2b8c77" opacity="0.9"/>
-              <path d="M0,40 Q70,20 140,50 Q210,80 280,50 Q315,35 350,40 L350,110 Q280,130 210,100 Q140,70 70,100 Q35,115 0,105 Z" fill="#6b4fa0" opacity="0.8"/>
-              <path d="M0,80 Q70,60 140,90 Q210,120 280,85 Q315,70 350,75 L350,155 Q280,170 210,140 Q140,110 70,140 Q35,155 0,145 Z" fill="#c9a84c" opacity="0.85"/>
-              <path d="M0,125 Q70,100 140,130 Q210,160 280,125 Q315,110 350,115 L350,200 L0,200 Z" fill="#e07b54" opacity="0.9"/>
-            </svg>
-          </div>
-        </div>
-        <div class="sim-exhibitions">
-          <div class="sim-ex-label">Now on view</div>
-          <div class="sim-ex-title">Current Exhibitions</div>
-          <div class="sim-ex-grid">
-            <div class="sim-ex-card">
-              <div class="sim-ex-img sim-ex-img-1"></div>
-              <div class="sim-ex-info">
-                <div class="sim-ex-name">Luminescence</div>
-                <div class="sim-ex-sub">Contemporary Glass Art</div>
-              </div>
-            </div>
-            <div class="sim-ex-card">
-              <div class="sim-ex-img sim-ex-img-2"></div>
-              <div class="sim-ex-info">
-                <div class="sim-ex-name">Revisions</div>
-                <div class="sim-ex-sub">Feminist Sculptors 1960–80</div>
-              </div>
-            </div>
-            <div class="sim-ex-card">
-              <div class="sim-ex-img sim-ex-img-3"></div>
-              <div class="sim-ex-info">
-                <div class="sim-ex-name">Digital Kinetics</div>
-                <div class="sim-ex-sub">Chen Wei & Collective</div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <img class="desktop-preview" src="middle.png" alt="Meridian Arts desktop preview">
+      </div>
+    </div>
+  </div>
+
+  <div class="desktop-showcase">
+    <div class="desktop-frame">
+      <div class="desktop-bar">
+        <div class="dot dot-red"></div>
+        <div class="dot dot-yellow"></div>
+        <div class="dot dot-green"></div>
+        <div class="desktop-url">meridianarts.org</div>
+      </div>
+      <div class="desktop-screen">
+        <img class="desktop-preview" src="back.png" alt="Meridian Arts desktop preview">
       </div>
     </div>
   </div>

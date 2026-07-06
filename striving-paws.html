@@ -530,21 +530,19 @@
                 position: relative;
             }
             .overview-image-card {
-                background: linear-gradient(
-                    135deg,
-                    #e8f5e9 0%,
-                    #c8e6c9 50%,
-                    #a5d6a7 100%
-                );
+                background: #f8f4e8;
                 border-radius: 24px;
-                height: 420px;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
+                min-height: 900px;
+                height: auto;
                 position: relative;
                 overflow: hidden;
                 box-shadow: 0 20px 50px rgba(0, 0, 0, 0.08);
+            }
+            .overview-image-card .overview-card-image {
+                width: 100%;
+                height: auto;
+                object-fit: contain;
+                display: block;
             }
             .overview-image-card .paw-big {
                 font-size: 6rem;
@@ -1343,8 +1341,8 @@
                 transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             }
             .reveal.active {
-                opacity: 1;
-                transform: translateY(0);
+                opacity: 1 !important;
+                transform: translateY(0) !important;
             }
             .reveal-delay-1 {
                 transition-delay: 0.1s;
@@ -1720,11 +1718,6 @@
                 if(!playBtn || !catVideo || !placeholder) return;
 
                 function playLocalVideo(){
-                    var srcEl = catVideo.querySelector('source');
-                    if(srcEl && srcEl.getAttribute('src') !== 'whiskers.mp4'){
-                        srcEl.setAttribute('src','whiskers.mp4');
-                        catVideo.load();
-                    }
                     placeholder.style.display = 'none';
                     catVideo.style.display = 'block';
                     catVideo.controls = true;
@@ -1822,9 +1815,7 @@
                     </div>
                     <div class="overview-visual reveal reveal-delay-2">
                         <div class="overview-image-card">
-                            <div class="paw-big"></div>
-                            <h3>Thriving Paws</h3>
-                            <p>Premium Pet Essentials</p>
+                            <img class="overview-card-image" src="longscroll.png" alt="Long Scroll" />
                         </div>
                         <div class="overview-badge top-right">
                             <div class="badge-icon green">✅</div>
